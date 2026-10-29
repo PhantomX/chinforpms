@@ -12,9 +12,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 99fecc1874d13c4aa038bb5cbe9ba2203febd3b5
+%global commit 302e408069d62222019c89037e824354d4fef7a3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260918
+%global date 20261027
 %bcond snapshot 1
 
 # Enable Qt build
@@ -25,8 +25,6 @@
 # Enable system ffmpeg
 %bcond ffmpeg 0
 %global bundleffmpegver 3.0.2
-# Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
-%bcond smallffmpeg 1
 %bcond miniupnpc 1
 %bcond pugixml 1
 %global bundlepugixml 1.15.0
@@ -40,14 +38,6 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-debugger
 
-%global commit2 b87f7c6d522d1edba77cfc4fac96ce48a236f806
-%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
-%global srcname2 %{name}-ffmpeg
-
-%global commit3 cbe88474ec196370161032a3863ec65050f70ba4
-%global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
-%global srcname3 ffmpeg-gas-preprocessor
-
 %global commit4 62adab4ef30da765f5cf22a451eb08a59c54dc8b
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 armips
@@ -60,7 +50,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 glslang
 
-%global commit7 4212eef67ed0ca048cb726a6767185504e7695e5
+%global commit7 f11ba9f0b21ba8fc15153d50a2a1ae31ab1cf8f7
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -68,7 +58,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%global commit9 2ac45d357bce2906bb0f1438f3eaf8ce6e78e3c4
+%global commit9 1433173220a7eaede6a9ed7a18e94117be1821e0
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
@@ -88,7 +78,7 @@
 %global shortcommit130 %(c=%{commit130}; echo ${c:0:7})
 %global srcname130 nanosvg
 
-%global commit140 9e533637b9a13bb0194c75cf43b0bf6d25d8101a
+%global commit140 ef5ad120f8f2692b6151ede4de2d5263ebbc27d6
 %global shortcommit140 %(c=%{commit140}; echo ${c:0:7})
 %global srcname140 aemu_postoffice
 
@@ -102,7 +92,7 @@
 %global jpgc_ver 1.05
 %global sdl3_ver 3.4.12
 %global sdl3_ttf_ver 3.2.2
-%global vma_ver 3.3.0
+%global vma_ver 3.4.0
 
 %if %{with qt}
 %global binname PPSSPPQt
@@ -116,7 +106,7 @@
 %global verminor %%(echo %{version} | cut -d. -f3)
 
 Name:           ppsspp
-Version:        1.20.4.1845
+Version:        1.20.4.4054
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -139,14 +129,6 @@ Source0:        %{vc_url}/%{name}/releases/download/v%{version}/%{name}-%{versio
 %else
 Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source1:        https://github.com/unknownbrackets/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
-%if %{without ffmpeg}
-%if %{with smallffmpeg}
-Source2:        %{srcname2}-nobin-%{shortcommit2}.tar.xz
-%else
-Source2:        %{vc_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
-%endif
-Source3:        https://github.com/FFmpeg/gas-preprocessor/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
-%endif
 Source4:        https://github.com/Kingcom/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 Source5:        https://github.com/google/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        https://github.com/KhronosGroup/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
@@ -168,7 +150,6 @@ Source901:      https://github.com/libsdl-org/SDL_ttf/releases/download/release-
 
 Source1000:     %{name}.appdata.xml
 Source1001:     %{name}-qt.appdata.xml
-Source1002:     Makefile
 
 Patch0:         0001-Disable-check-for-new-versions.patch
 Patch2:         0001-Set-pulseaudio-application-name.patch
@@ -350,10 +331,6 @@ Additional tools files for %{name}.
 
 %if %{with snapshot}
 tar -xf %{SOURCE1} -C assets/debugger --strip-components 1
-%if %{without ffmpeg}
-tar -xf %{SOURCE2} -C ffmpeg --strip-components 1
-tar -xf %{SOURCE3} -C ffmpeg/gas-preprocessor --strip-components 1
-%endif
 tar -xf %{SOURCE4} -C ext/armips --strip-components 1
 tar -xf %{SOURCE5} -C ext/cpu_features --strip-components 1
 tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
@@ -385,17 +362,18 @@ rm -rf MoltenVK/*
 
 find ext Core -type f \( -name '*.c*' -o -name '*.h*' -o -name '*.y' \) -exec chmod -x {} ';'
 
+pushd ext
 %if %{with ffmpeg}
 rm -rf ffmpeg
 %else
-cp -p ffmpeg/LICENSE.md ext/LICENSE.ffmpeg.md
+cp -p ffmpeg/LICENSE.md LICENSE.ffmpeg.md
 %endif
-pushd ext
 cp -p armips/LICENSE.txt LICENSE.armips
 cp -p cityhash/COPYING COPYING.cityhash
 cp -p cpu_features/LICENSE LICENSE.cpu_features
 cp -p gason/LICENSE LICENSE.gason
 cp -p glslang/LICENSE.txt LICENSE.glslang
+cp -p libdeflate/COPYING COPYING.libdeflate
 cp -p nanosvg/LICENSE.txt LICENSE.nanosvg
 cp -p rcheevos/LICENSE LICENSE.rcheevos
 cp -p SPIRV-Cross/LICENSE LICENSE.SPIRV-Cross
@@ -456,30 +434,6 @@ sed \
   -e 's| -O3 | |g' \
   -i ext/armips/ext/tinyformat/Makefile
 
-%if %{without ffmpeg}
-pushd ffmpeg
-sed \
-  -e '/^ARCH=/s|=.*|=%{_target_cpu}|g' \
-  -e '/--extra-cflags/i\    --cc="${CC:-gcc}" \\' \
-  -e '/--extra-cflags/i\    --cxx="${CXX:-g++}" \\' \
-  -e '/--extra-cflags/i\    --ar="${AR:-gcc-ar}" \\' \
-  -e '/--extra-cflags/i\    --as="${AS:-gcc-as}" \\' \
-  -e '/--extra-cflags/i\    --ranlib="${RANLIB:-gcc-ranlib}" \\' \
-  -e '/--extra-cflags/i\    --nm="${NM:-gcc-nm}" \\' \
-  -e '/disable-everything/i\    --disable-inline-asm \\' \
-  -e 's|disable-everything|\0 --disable-debug --disable-stripping|g' \
-  -e '/make install/d' \
-  -i linux_*.sh
-
-sed -e "s|_cflags_speed='.*'|_cflags_speed=''|g" -i configure
-
-rm -rf */*/include
-rm -rf */*/lib
-rm -rf wiiu
-
-popd
-%endif
-
 sed \
   -e "s|_RPM_LIBCOMMON_|$(pwd)/%{_vpath_builddir}/lib/libCommon.a|g" \
   -i ext/native/tools/CMakeLists.txt
@@ -501,28 +455,6 @@ pushd ext/native/tools
 %{nil}
 
 popd
-
-%if %{without ffmpeg}
-pushd ffmpeg
-sed \
-  -e "/extra-cflags/s|-O3|$CFLAGS|g" \
-  -i linux_*.sh
-%ifarch x86_64
-./linux_x86-64.sh
-%endif
-%ifarch %{ix86}
-./linux_x86.sh
-%endif
-%ifarch %{arm}
-./linux_arm.sh
-%endif
-%ifarch %{mips32}
-./linux_mips32.sh
-%endif
-%make_build
-make install
-popd
-%endif
 
 %cmake \
   -DCMAKE_BUILD_TYPE:STRING="Release" \

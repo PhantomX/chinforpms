@@ -102,7 +102,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        26.2.5
+Version:        26.2.6
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -829,6 +829,9 @@ ln -s libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_system.so.0
 
 
 %changelog
+* Wed Oct 28 2026 Phantom X <megaphantomx at hotmail dot com> - 26.2.6-100
+- 26.2.6
+
 * Wed Oct 14 2026 Phantom X <megaphantomx at hotmail dot com> - 26.2.5-100
 - 26.2.5
 

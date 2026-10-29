@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit c2237de04d8c08cb5ad0ba3fb98e5a9640203257
+%global commit 1edf59ef592a854ccc2a7405d9aade477b2a0b3d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260916
+%global date 20261025
 %bcond snapshot 1
 
 %bcond sse42 0
@@ -25,6 +25,7 @@
 %bcond cryptopp 1
 # Enable system dynarmic
 %bcond dynarmic 0
+%bcond faad2 1
 %bcond ffmpeg 0
 # Enable system fmt
 %bcond fmt 1
@@ -72,9 +73,9 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 fmt
 
-%global commit5 3b3e28dbe6d033395ce2967fa8030825e7b89de7
-%global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
-%global srcname5 ext-library-headers
+%global commit5 5c8004c333ee227549dea21d8d48f775a91fc70f
+%global shortcommit5 %(c=%{commit4}; echo ${c:0:7})
+%global srcname5 microtar
 
 %global commit6 f4d8659decbfe5d234f04134b5002b82dc515a44
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
@@ -140,8 +141,6 @@
 %global shortcommit21 %(c=%{commit21}; echo ${c:0:7})
 %global srcname21 xbyak
 
-%global ffmpeg_includedir %(pkg-config --variable=includedir libavcodec)
-
 %global cpphttplibver b251668
 %global glad_ver 0.1.36
 %global vkh_ver 1.4.304
@@ -158,8 +157,8 @@
 %global verb    %%{lua:verb = string.gsub(rpm.expand("%%{ver}"), "%.", "-"); print(verb)}
 
 Name:           azahar
-Version:        2126.1.22
-Release:        2%{?dist}
+Version:        2127.0~alpha3.21
+Release:        1%{?dist}
 
 Summary:        A 3DS Emulator
 
@@ -195,9 +194,7 @@ Source302:      https://github.com/zyantific/%{srcname302}/archive/%{commit302}/
 %if %{without fmt}
 Source4:        https://github.com/fmtlib/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 %endif
-%if %{without ffmpeg}
 Source5:        %{vc_url}/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
-%endif
 Source6:        https://github.com/neobrain/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 %if %{without soundtouch}
 Source7:        %{vc_url}/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
@@ -226,7 +223,9 @@ Source16:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname16}/archive
 %if %{without vulkan}
 Source17:       https://github.com/KhronosGroup/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
 %endif
+%if %{without faad2}
 Source18:       https://github.com/knik0/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
+%endif
 %if %{without glslang}
 Source19:       https://github.com/KhronosGroup/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
 %endif
@@ -236,7 +235,6 @@ Source21:       https://github.com/herumi/%{srcname21}/archive/%{commit21}/%{src
 %endif
 
 Patch10:        0001-Use-system-libraries.patch
-Patch11:        0001-dumping-ffmpeg-7-buld-fix.patch
 
 BuildRequires:  cmake
 BuildRequires:  ninja-build
@@ -269,6 +267,11 @@ Provides:       bundled(dynarmic) = 0~git%{?shortcommit3}
 %if %{with mcl}
 BuildRequires:  cmake(mcl) >= 0.1.14
 %endif
+%endif
+%if %{with faad2}
+BuildRequires:  pkgconfig(faad2)
+%else
+Provides:       bundled(faad2) = ~git%{?shortcommit18}
 %endif
 BuildRequires:  pkgconfig(gamemode)
 %if %{with ffmpeg}
@@ -352,6 +355,7 @@ Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(cpp-httplib) = 0~git%{?cpphttplibver}
 Provides:       bundled(glad) = %{glad_ver}
+Provides:       bundled(microtar) = 0~git%{shortcommit5}
 Provides:       bundled(nihstro) = 0~git%{shortcommit6}
 Provides:       bundled(teakra) = 0~git%{shortcommit8}
 Provides:       bundled(dds-ktx) = 0~git%{shortcommit9}
@@ -359,7 +363,6 @@ Provides:       bundled(lodepng) = 0~git%{shortcommit10}
 %if %{with webservice}
 Provides:       bundled(cpp-jwt) = 0~git%{shortcommit12}
 %endif
-Provides:       bundled(faad2) = ~git%{?shortcommit18}
 
 
 %description
@@ -402,10 +405,7 @@ sed -e '/find_package/s|dynarmic|\0_DISABLED|g' -i externals/CMakeLists.txt
 tar -xf %{S:4} -C externals/fmt --strip-components 1
 sed -e '/find_package/s|fmt|\0_DISABLED|g' -i externals/CMakeLists.txt
 %endif
-%if %{without ffmpeg}
-tar -xf %{S:5} -C externals/library-headers --strip-components 1
-rm -rf externals/library-headers/fdk-aac
-%endif
+tar -xf %{S:5} -C externals/microtar --strip-components 1
 tar -xf %{S:6} -C externals/nihstro --strip-components 1
 %if %{without soundtouch}
 tar -xf %{S:7} -C externals/soundtouch --strip-components 1
@@ -440,7 +440,9 @@ tar -xf %{S:16} -C externals/vma --strip-components 1
 %if %{without vulkan}
 tar -xf %{S:17} -C externals/vulkan-headers/ --strip-components 1
 %endif
+%if %{without faad2}
 tar -xf %{S:18} -C externals/faad2/faad2 --strip-components 1
+%endif
 %if %{with zstd}
 zstdcommom='zstd-*/lib/common'
 tar -xf %{S:20} -C externals/zstd --strip-components 1 \
@@ -471,9 +473,8 @@ cp -p dds-ktx/LICENSE LICENSE.dds-ktx
 %if %{without dynarmic}
 cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
 %endif
+%if %{without faad2}
 cp -p faad2/faad2/COPYING COPYING.faad2
-%if %{without ffmpeg}
-cp -p library-headers/ffmpeg/COPYING.GPLv3 COPYING.ffmpeg
 %endif
 %if %{without fmt}
 cp -p fmt/LICENSE LICENSE.fmt
@@ -483,6 +484,7 @@ cp -p glslang/LICENSE.txt LICENSE.glslang
 cp -p spirv-tools/LICENSE LICENSE.spirv-tools
 %endif
 cp -p lodepng/lodepng/LICENSE LICENSE.lodepng
+cp -p microtar/LICENSE LICENSE.microtar
 cp -p nihstro/license.txt LICENSE.nihstro
 %if %{without sirit}
 cp -p sirit/sirit/LICENSE.txt LICENSE.sirit
@@ -519,11 +521,6 @@ sed \
   -i externals/dynarmic/CMakeLists.txt \
 %endif
   -i externals/teakra/CMakeLists.txt
-
-sed -e '/^#include <exception>/a#include <system_error>' \
-  -i externals/teakra/src/interpreter.h
-
-sed -e 's|zstd/contrib/seekable_format/||' -i src/common/zstd_compression.cpp
 
 sed -e '/find_package/s|Git|\0_DISABLED|g' -i CMakeModules/GenerateSCMRev.cmake
 
@@ -572,6 +569,7 @@ export GITHUB_REPOSITORY="%{vc_url}/%{azahar}"
   %{?with_cryptopp:-DUSE_SYSTEM_CRYPTOPP:BOOL=ON} \
   -DUSE_SYSTEM_CUBEB:BOOL=ON \
   -DUSE_SYSTEM_ENET:BOOL=ON \
+  %{?with_faad2:-DUSE_SYSTEM_FAAD:BOOL=ON} \
   -DUSE_SYSTEM_INIH:BOOL=ON \
   -DUSE_SYSTEM_JSON:BOOL=ON \
   -DUSE_SYSTEM_LIBUSB:BOOL=ON \
@@ -582,17 +580,18 @@ export GITHUB_REPOSITORY="%{vc_url}/%{azahar}"
 %if %{with glslang}
   -DUSE_SYSTEM_GLSLANG:BOOL=ON \
   -DUSE_SYSTEM_SPIRV_HEADERS:BOOL=ON \
+  -DUSE_SYSTEM_SPIRV_TOOLS:BOOL=ON \
   -DSIRIT_USE_SYSTEM_SPIRV_HEADERS:BOOL=ON \
 %endif
   %{?with_vma:-DUSE_SYSTEM_VMA:BOOL=ON} \
   %{?with_vulkan:-DUSE_SYSTEM_VULKAN_HEADERS:BOOL=ON} \
   %{?with_xbyak:-DUSE_SYSTEM_XBYAK:BOOL=ON} \
+  -DUSE_SYSTEM_XXHASH:BOOL=ON \
   %{?with_zstd:-DUSE_SYSTEM_ZSTD:BOOL=ON} \
   %{?with_boost:-DUSE_SYSTEM_BOOST:BOOL=ON} \
   %{?with_soundtouch:-DUSE_SYSTEM_SOUNDTOUCH:BOOL=ON} \
-%if %{with ffmpeg}
-  -DUSE_SYSTEM_FFMPEG_HEADERS:BOOL=ON \
-  -DSYSTEM_FFMPEG_INCLUDES:PATH=%{ffmpeg_includedir} \
+%if %{without ffmpeg}
+  -DENABLE_FFMPEG:BOOL=OFF \
 %endif
   -DCRYPTOPP_SOURCES:PATH=$(pwd)/externals/cryptopp \
 %if %{with tests}
@@ -628,7 +627,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %files
-%license license.txt externals/{COPYING,COPYRIGHT,LICENSE}.*
+%license LICENSE.txt externals/{COPYING,COPYRIGHT,LICENSE}.*
 %doc README.md
 %{_bindir}/%{name}
 %{_bindir}/%{name}-room
@@ -636,15 +635,17 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 %if %{with qt}
 %files qt
-%license license.txt
 %{_bindir}/%{name}
 %{_datadir}/applications/%{appname}.desktop
-%{_datadir}/icons/hicolor/*/apps/*
+%{_datadir}/icons/hicolor/*/apps/%{appname}.*
 %{_datadir}/mime/packages/%{appname}.xml
 %endif
 
 
 %changelog
+* Tue Oct 27 2026 Phantom X <megaphantomx at hotmail dot com> - 2127.0~alpha3.21-1.20261025git1edf59e
+- 2127.0-alpha3
+
 * Mon Aug 10 2026 Phantom X <megaphantomx at hotmail dot com> - 2126.0.3-1.20260810git3218402
 - 2126.0
 

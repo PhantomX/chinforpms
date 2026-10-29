@@ -1,4 +1,4 @@
-From 8573a03c157c27ff582769c8fbbbbd4906e2c359 Mon Sep 17 00:00:00 2001
+From ec5676e8c0f8909d457a256848210dcd456514da Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 2 Mar 2019 23:43:44 -0300
 Subject: [PATCH] Disable check for new versions
@@ -9,18 +9,18 @@ This is a package
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Core/Config.cpp b/Core/Config.cpp
-index f68ddfb..e6a2460 100644
+index c38b8de..c779544 100644
 --- a/Core/Config.cpp
 +++ b/Core/Config.cpp
-@@ -236,7 +236,7 @@ static const ConfigSetting generalSettings[] = {
+@@ -350,7 +350,7 @@ static constexpr ConfigSetting generalSettings[] = {
  	ConfigSetting("CurrentDirectory", SETTING(g_Config, currentDirectory), "", CfgFlag::DEFAULT),
  	ConfigSetting("ShowDebuggerOnLoad", SETTING(g_Config, bShowDebuggerOnLoad), false, CfgFlag::DEFAULT),
  	ConfigSetting("ShowImDebugger", SETTING(g_Config, bShowImDebugger), false, CfgFlag::DONT_SAVE),
--	ConfigSetting("CheckForNewVersion", SETTING(g_Config, bCheckForNewVersion), true, CfgFlag::DEFAULT),
-+	ConfigSetting("CheckForNewVersion", SETTING(g_Config, bCheckForNewVersion), false, CfgFlag::DEFAULT),
- 	ConfigSetting("Language", SETTING(g_Config, sLanguageIni), &DefaultLangRegion, CfgFlag::DEFAULT),
- 	ConfigSetting("ForceLagSync2", SETTING(g_Config, bForceLagSync), false, CfgFlag::PER_GAME),
- 	ConfigSetting("DiscordRichPresence", SETTING(g_Config, bDiscordRichPresence), false, CfgFlag::DEFAULT),
+-	ConfigSetting("CheckForNewVersion", SETTING(g_Config, bCheckForNewVersion), true, CfgFlag::DEFAULT)
++	ConfigSetting("CheckForNewVersion", SETTING(g_Config, bCheckForNewVersion), false, CfgFlag::DEFAULT)
+ 		.Label(I18NCat::SYSTEM, "VersionCheck", "Check for new versions of PPSSPP").OnChanged(&OnCheckForNewVersionChanged),
+ #if PPSSPP_PLATFORM(WINDOWS) && PPSSPP_ARCH(X86)
+ 	ConfigSetting("Wow64WarningDismissed", SETTING(g_Config, bWow64WarningDismissed), false, CfgFlag::DEFAULT),
 -- 
-2.51.1
+2.56.0
 

@@ -1,4 +1,4 @@
-From 6429e45feae4f0f7a83eef98f1c4fb33d2a31f9c Mon Sep 17 00:00:00 2001
+From 4a0093d8aefb441ba3021808c9842f5e9af6b392 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 26 Apr 2022 11:46:46 -0300
 Subject: [PATCH] Use system libraries
@@ -10,12 +10,16 @@ Subject: [PATCH] Use system libraries
  Common/File/VFS/SevenZipFileReader.h   |  5 +++++
  Common/File/VFS/ZipFileReader.cpp      |  2 +-
  Common/File/VFS/ZipFileReader.h        |  2 +-
+ Common/GPU/Vulkan/VulkanContext.cpp    |  2 +-
+ Common/Render/Text/draw_text.cpp       |  2 +-
  Core/Debugger/DisassemblyManager.cpp   |  2 +-
+ Core/HLE/ReplaceTables.cpp             |  2 +-
  Core/HLE/sceJpeg.cpp                   |  2 +-
  Core/MIPS/IR/IRJit.cpp                 |  2 +-
- Core/MIPS/JitCommon/JitBlockCache.cpp  |  2 +-
+ Core/MIPS/MIPSTracer.cpp               |  2 +-
  Core/Util/GameManager.cpp              |  2 +-
  Core/Util/PPGeDraw.cpp                 |  2 +-
+ GPU/Common/ShaderCommon.cpp            |  2 +-
  GPU/Common/TextureCacheCommon.cpp      |  2 +-
  GPU/Common/TextureDecoder.cpp          |  2 +-
  GPU/Common/TextureReplacer.cpp         |  2 +-
@@ -26,13 +30,13 @@ Subject: [PATCH] Use system libraries
  UI/ImDebugger/ImMemView.cpp            |  2 +-
  Windows/Debugger/CtrlMemView.cpp       |  2 +-
  ext/CMakeLists.txt                     | 25 +++++++++++++++++++++++++
- 22 files changed, 68 insertions(+), 17 deletions(-)
+ 26 files changed, 72 insertions(+), 21 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index c81d415..3cc4b7d 100644
+index 315830a..d02387b 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1111,6 +1111,14 @@ endif()
+@@ -1089,6 +1089,14 @@ endif()
  
  add_subdirectory(Common)
  
@@ -104,7 +108,7 @@ index 5411587..35934ae 100644
  #include "Common/File/VFS/VFS.h"
  #include "Common/File/FileUtil.h"
 diff --git a/Common/File/VFS/ZipFileReader.cpp b/Common/File/VFS/ZipFileReader.cpp
-index 83655bc..6624fba 100644
+index 595083f..95ac3c2 100644
 --- a/Common/File/VFS/ZipFileReader.cpp
 +++ b/Common/File/VFS/ZipFileReader.cpp
 @@ -7,7 +7,7 @@
@@ -129,8 +133,34 @@ index c2779d6..0feae89 100644
  #endif
  
  #include <mutex>
+diff --git a/Common/GPU/Vulkan/VulkanContext.cpp b/Common/GPU/Vulkan/VulkanContext.cpp
+index 97a0153..12a88f4 100644
+--- a/Common/GPU/Vulkan/VulkanContext.cpp
++++ b/Common/GPU/Vulkan/VulkanContext.cpp
+@@ -15,7 +15,7 @@
+ #include "Common/GPU/Vulkan/FixedSPIRVCache.h"
+ #include "Common/StringUtils.h"
+ #include "Common/File/FileUtil.h"
+-#include "ext/xxhash.h"
++#include "xxhash.h"
+ 
+ #ifdef USE_CRT_DBG
+ #undef new
+diff --git a/Common/Render/Text/draw_text.cpp b/Common/Render/Text/draw_text.cpp
+index e4c210b..49e7021 100644
+--- a/Common/Render/Text/draw_text.cpp
++++ b/Common/Render/Text/draw_text.cpp
+@@ -13,7 +13,7 @@
+ #include <algorithm>
+ #include <cstring>
+ 
+-#include "ext/xxhash.h"
++#include "xxhash.h"
+ #include "Common/System/Display.h"
+ #include "Common/GPU/thin3d.h"
+ #include "Common/Data/Hash/Hash.h"
 diff --git a/Core/Debugger/DisassemblyManager.cpp b/Core/Debugger/DisassemblyManager.cpp
-index f73c355..43e0c7d 100644
+index 3b861d7..8107dbd 100644
 --- a/Core/Debugger/DisassemblyManager.cpp
 +++ b/Core/Debugger/DisassemblyManager.cpp
 @@ -21,7 +21,7 @@
@@ -142,6 +172,19 @@ index f73c355..43e0c7d 100644
  
  #include "Common/CommonTypes.h"
  #include "Common/Data/Encoding/Utf8.h"
+diff --git a/Core/HLE/ReplaceTables.cpp b/Core/HLE/ReplaceTables.cpp
+index 8398564..97ddb05 100644
+--- a/Core/HLE/ReplaceTables.cpp
++++ b/Core/HLE/ReplaceTables.cpp
+@@ -46,7 +46,7 @@
+ #include "GPU/GPU.h"
+ #include "GPU/GPUCommon.h"
+ #include "Common/Math/SIMDHeaders.h"
+-#include "ext/xxhash.h"
++#include "xxhash.h"
+ 
+ enum class GPUReplacementSkip {
+ 	MEMSET = 1,
 diff --git a/Core/HLE/sceJpeg.cpp b/Core/HLE/sceJpeg.cpp
 index ac0f941..ff1e83a 100644
 --- a/Core/HLE/sceJpeg.cpp
@@ -156,7 +199,7 @@ index ac0f941..ff1e83a 100644
  #include "Common/StringUtils.h"
  #endif
 diff --git a/Core/MIPS/IR/IRJit.cpp b/Core/MIPS/IR/IRJit.cpp
-index b5611d2..5116903 100644
+index ecc8398..13072c9 100644
 --- a/Core/MIPS/IR/IRJit.cpp
 +++ b/Core/MIPS/IR/IRJit.cpp
 @@ -19,7 +19,7 @@
@@ -168,24 +211,24 @@ index b5611d2..5116903 100644
  #include "Common/Profiler/Profiler.h"
  
  #include "Common/Log.h"
-diff --git a/Core/MIPS/JitCommon/JitBlockCache.cpp b/Core/MIPS/JitCommon/JitBlockCache.cpp
-index d4e9a7a..fc12309 100644
---- a/Core/MIPS/JitCommon/JitBlockCache.cpp
-+++ b/Core/MIPS/JitCommon/JitBlockCache.cpp
-@@ -19,7 +19,7 @@
- #include <cstddef>
- #include <algorithm>
- 
+diff --git a/Core/MIPS/MIPSTracer.cpp b/Core/MIPS/MIPSTracer.cpp
+index 30e898e..d609434 100644
+--- a/Core/MIPS/MIPSTracer.cpp
++++ b/Core/MIPS/MIPSTracer.cpp
+@@ -20,7 +20,7 @@
+ #include <cstring> // for std::memcpy
+ #include "Core/MIPS/MIPSTables.h" // for MIPSDisAsm
+ #include "Core/MemMap.h" // for Memory::GetPointerUnchecked
 -#include "ext/xxhash.h"
 +#include "xxhash.h"
- #include "Common/CommonTypes.h"
- #include "Common/Profiler/Profiler.h"
+ #include "Common/File/FileUtil.h" // for the File::OpenCFile
+ 
  
 diff --git a/Core/Util/GameManager.cpp b/Core/Util/GameManager.cpp
-index 19d2355..35b4b68 100644
+index 3b3e475..d63d983 100644
 --- a/Core/Util/GameManager.cpp
 +++ b/Core/Util/GameManager.cpp
-@@ -27,7 +27,7 @@
+@@ -28,7 +28,7 @@
  #ifdef SHARED_LIBZIP
  #include <zip.h>
  #else
@@ -195,7 +238,7 @@ index 19d2355..35b4b68 100644
  #ifdef _WIN32
  
 diff --git a/Core/Util/PPGeDraw.cpp b/Core/Util/PPGeDraw.cpp
-index 94da3cc..ba9565c 100644
+index 98d8ee7..c349061 100644
 --- a/Core/Util/PPGeDraw.cpp
 +++ b/Core/Util/PPGeDraw.cpp
 @@ -17,7 +17,7 @@
@@ -207,8 +250,21 @@ index 94da3cc..ba9565c 100644
  
  #include "Common/System/System.h"
  #include "Common/Data/Color/RGBAUtil.h"
+diff --git a/GPU/Common/ShaderCommon.cpp b/GPU/Common/ShaderCommon.cpp
+index e6ba784..111bd96 100644
+--- a/GPU/Common/ShaderCommon.cpp
++++ b/GPU/Common/ShaderCommon.cpp
+@@ -4,7 +4,7 @@
+ #include "Common/File/FileUtil.h"
+ #include "Common/GPU/Shader.h"
+ #include "GPU/Common/ShaderCommon.h"
+-#include "ext/xxhash.h"
++#include "xxhash.h"
+ 
+ bool AppendShaderCacheChecksum(const Path &filename) {
+ 	std::string data;
 diff --git a/GPU/Common/TextureCacheCommon.cpp b/GPU/Common/TextureCacheCommon.cpp
-index 40477d5..901f37c 100644
+index 78f64d2..9747b5e 100644
 --- a/GPU/Common/TextureCacheCommon.cpp
 +++ b/GPU/Common/TextureCacheCommon.cpp
 @@ -19,7 +19,7 @@
@@ -234,7 +290,7 @@ index 59e81d4..742bb04 100644
  #include "Common/Common.h"
  #include "Common/Log.h"
 diff --git a/GPU/Common/TextureReplacer.cpp b/GPU/Common/TextureReplacer.cpp
-index c6f98e4..c5c5fec 100644
+index 51a8ca0..d5360ed 100644
 --- a/GPU/Common/TextureReplacer.cpp
 +++ b/GPU/Common/TextureReplacer.cpp
 @@ -22,7 +22,7 @@
@@ -247,7 +303,7 @@ index c6f98e4..c5c5fec 100644
  #include "Common/Data/Format/IniFile.h"
  #include "Common/Data/Format/PNGLoad.h"
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index 9be6d61..d1565e5 100644
+index ce8f1e1..c94a718 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
 @@ -33,7 +33,7 @@
@@ -260,7 +316,7 @@ index 9be6d61..d1565e5 100644
  using namespace Microsoft::WRL;
  
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
-index 8cd71a4..256f2df 100644
+index 5f5e818..8ac292a 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp
 +++ b/GPU/GLES/TextureCacheGLES.cpp
 @@ -17,7 +17,7 @@
@@ -273,7 +329,7 @@ index 8cd71a4..256f2df 100644
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/UI/AdhocServerScreen.cpp b/UI/AdhocServerScreen.cpp
-index dbbf376..3387bb1 100644
+index 30c7b23..19221e2 100644
 --- a/UI/AdhocServerScreen.cpp
 +++ b/UI/AdhocServerScreen.cpp
 @@ -9,7 +9,11 @@
@@ -289,7 +345,7 @@ index dbbf376..3387bb1 100644
  
  #include "AdhocServerScreen.h"
 diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
-index efdcf97..d4e6ebd 100644
+index b98f92a..f0427b9 100644
 --- a/UI/CwCheatScreen.cpp
 +++ b/UI/CwCheatScreen.cpp
 @@ -16,7 +16,7 @@
@@ -302,7 +358,7 @@ index efdcf97..d4e6ebd 100644
  #include "Common/UI/PopupScreens.h"
  
 diff --git a/UI/ImDebugger/ImMemView.cpp b/UI/ImDebugger/ImMemView.cpp
-index 85da5f2..7480e83 100644
+index dc6040b..8eee5af 100644
 --- a/UI/ImDebugger/ImMemView.cpp
 +++ b/UI/ImDebugger/ImMemView.cpp
 @@ -8,7 +8,7 @@
@@ -313,9 +369,9 @@ index 85da5f2..7480e83 100644
 +#include "xxhash.h"
  #include "Common/StringUtils.h"
  #include "Common/File/FileUtil.h"
- #include "Core/Config.h"
+ #include "Core/MemMap.h"
 diff --git a/Windows/Debugger/CtrlMemView.cpp b/Windows/Debugger/CtrlMemView.cpp
-index 4d0a780..b7c491a 100644
+index 8ff5867..5d50d94 100644
 --- a/Windows/Debugger/CtrlMemView.cpp
 +++ b/Windows/Debugger/CtrlMemView.cpp
 @@ -2,7 +2,7 @@
@@ -328,7 +384,7 @@ index 4d0a780..b7c491a 100644
  #include "Core/Config.h"
  #include "Core/Core.h"
 diff --git a/ext/CMakeLists.txt b/ext/CMakeLists.txt
-index 16e1714..f0cb7b8 100644
+index 65ffa13..881a6ab 100644
 --- a/ext/CMakeLists.txt
 +++ b/ext/CMakeLists.txt
 @@ -39,17 +39,42 @@ add_subdirectory(rcheevos-build)
@@ -372,8 +428,8 @@ index 16e1714..f0cb7b8 100644
  )
 +endif()
  
- set(aemu_postoffice_client_obj
- 	aemu_postoffice/client/postoffice.c
+ # Only the deflate encoder, for writing CSO files (Core/FileSystems/CSOCompress.cpp).
+ add_library(libdeflate STATIC
 -- 
-2.55.0
+2.56.0
 

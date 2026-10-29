@@ -89,6 +89,7 @@ Provides:       bundled(srcname15) = %{?srcname15_ver}
 Provides:       bundled(srcname16) = %{?srcname16_ver}
 Provides:       bundled(srcname17) = %{?srcname17_ver}
 Provides:       bundled(srcname18) = %{?srcname18_ver}
+Provides:       bundled(srcname19) = %{?srcname19_ver}
 
 %description libs
 The %{name}-libs package contains the dynamic libraries needed for %{name} and
