@@ -77,7 +77,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.20
+%global wine_stagingver 11.21
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -88,7 +88,7 @@
 %global ge_id 0fdd9b74b7fad38fb1c483d74efc738bb02c9e59
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 2c529ea6c3696f88861a0e061c54523931310cbe
+%global tkg_id 52f7004f7b95c0d9565b7ce051f5445166ef4ff2
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -98,7 +98,7 @@
 
 %if 0%{?wine_staging}
 %global cap_st cap_sys_nice,
-%global wine_staging_opts -W server-Stored_ACLs -W dcomp-DCompositionCreateDevice2
+%global wine_staging_opts -W dcomp-DCompositionCreateDevice2
 %endif
 
 %global perms_pldr %caps(cap_net_raw+eip)
@@ -125,7 +125,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.20
+Version:        11.21
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -256,10 +256,6 @@ BuildRequires:  clang >= 5.0
 BuildRequires:  lld
 %else
 BuildRequires:  gcc
-%if (%{defined fedora} && 0%{?fedora} >= 45)
-# preloader fail to link with binutils 2.47
-BuildRequires:  (compat-binutils >= 2.46 with compat-binutils < 2.47)
-%endif
 %endif
 BuildRequires:  kernel-headers >= 6.14
 # mingw-binutils 2.35 or patched 2.34 is needed to prevent crashes
@@ -894,6 +890,12 @@ autoreconf -f
 
 
 %build
+%if 0%{?fedora} >= 45
+# Revert linker to not rearrange segments for F45+
+# https://sourceware.org/bugzilla/show_bug.cgi?id=34714
+sed -i -e 's/wine_preloader_LDFLAGS = $(WINEPRELOADER_LDFLAGS)/wine_preloader_LDFLAGS = $(WINEPRELOADER_LDFLAGS) -Wl,--no-rosegment/' loader/Makefile.in
+%endif
+
 export X_CFLAGS="-ftree-vectorize"
 export X_LDFLAGS="-Wl,-O1,--sort-common"
 
@@ -906,8 +908,6 @@ export X_CFLAGS+=" -Wno-error=implicit-function-declaration"
 %endif
 
 export CFLAGS="%{build_cflags} ${X_CFLAGS}"
-
-export LD=ld.bfd246
 
 # Remove this flags by upstream recommendation (see configure.ac)
 export CFLAGS="`echo $CFLAGS | sed \
@@ -955,15 +955,6 @@ unset PKG_CONFIG_PATH
 export CROSSDEBUG=split
 %endif
 
-%if (%{defined fedora} && 0%{?fedora} >= 45)
-%ifnarch aarch64
-mkdir bin
-ln -s %{_bindir}/ld.bfd246 bin/ld
-ln -s %{_bindir}/ld.bfd246 bin/ld.bfd
-export PATH="$(pwd)/bin:$PATH"
-%endif
-%endif
-
 %configure \
  --sysconfdir=%{_sysconfdir}/wine \
  --x-includes=%{_includedir} --x-libraries=%{_x_libdir} \
@@ -985,12 +976,6 @@ export PATH="$(pwd)/bin:$PATH"
 %make_build TARGETFLAGS=""
 
 %install
-%if (%{defined fedora} && 0%{?fedora} >= 45)
-%ifnarch aarch64
-export PATH="$(pwd)/bin:$PATH"
-%endif
-%endif
-
 %make_install \
         LDCONFIG=/bin/true \
         UPDATE_DESKTOP_DATABASE=/bin/true
@@ -1168,9 +1153,12 @@ desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE114}
 
+# remove MIME line per security reasoning of launching wine apps within flatpaks            
+# install wine-systemd to use binfmt automatic binary launching  
 desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications \
   --delete-original \
+  --remove-key="MimeType" \
   %{buildroot}%{_datadir}/applications/wine.desktop
 
 #mime-types
@@ -1634,6 +1622,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/mfplay.dll
 %{_libdir}/wine/%{winepedirs}/mfreadwrite.dll
 %{_libdir}/wine/%{winepedirs}/mfsrcsnk.dll
+%{_libdir}/wine/%{winepedirs}/mfwmaaec.dll
 %{_libdir}/wine/%{winepedirs}/mgmtapi.dll
 %{_libdir}/wine/%{winepedirs}/midimap.dll
 %{_libdir}/wine/%{winepedirs}/mlang.dll
@@ -2492,6 +2481,9 @@ fi
 
 
 %changelog
+* Sat Oct 31 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.21-100
+- 11.21
+
 * Sat Oct 17 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.20-100
 - 11.20
 

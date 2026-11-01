@@ -1,14 +1,14 @@
-From 17c570615479120c22c1690faefaac297e675927 Mon Sep 17 00:00:00 2001
+From d63ddba8134a1465a5033e5e3c4530f999a77de9 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 27 Mar 2025 16:00:08 -0300
 Subject: [PATCH] Fix ltdp 0002 patch
 
 ---
- ltdp-0002-Disable-saving-restrictions.patch | 32 ++++++++++++++-------
- 1 file changed, 22 insertions(+), 10 deletions(-)
+ ltdp-0002-Disable-saving-restrictions.patch | 35 ++++++++++++++-------
+ 1 file changed, 24 insertions(+), 11 deletions(-)
 
 diff --git a/ltdp-0002-Disable-saving-restrictions.patch b/ltdp-0002-Disable-saving-restrictions.patch
-index 6037cb6..524a3ed 100644
+index 6037cb6..e316bc9 100644
 --- a/ltdp-0002-Disable-saving-restrictions.patch
 +++ b/ltdp-0002-Disable-saving-restrictions.patch
 @@ -21,11 +21,15 @@ diff --git a/Telegram/SourceFiles/history/history_inner_widget.cpp b/Telegram/So
@@ -78,12 +78,12 @@ index 6037cb6..524a3ed 100644
  -		return false;
  -	} else if (const auto chat = _peer->asChat()) {
  -		return !chat->canDeleteMessages();
-@@ -166,11 +175,14 @@ diff --git a/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp b/Tel
+@@ -166,18 +175,22 @@ diff --git a/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp b/Tel
  index 9362819..4b3944f 100644
  --- a/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp
  +++ b/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp
 -@@ -1083,13 +1083,7 @@ QSize OverlayWidget::flipSizeByRotation(QSize size) const {
-+@@ -1109,16 +1109,7 @@ QSize OverlayWidget::flipSizeByRotation(QSize size) const {
++@@ -1109,17 +1109,7 @@ QSize OverlayWidget::flipSizeByRotation(QSize size) const {
   }
   
   bool OverlayWidget::hasCopyMediaRestriction(bool skipPremiumCheck) const {
@@ -94,13 +94,16 @@ index 6037cb6..524a3ed 100644
  -		return skipPremiumCheck
  -			? !story->canDownloadIfPremium()
  -			: !story->canDownloadChecked();
-@@ -179,5 +191,5 @@ index 9362819..4b3944f 100644
- -		|| (_message && _message->forbidsSaving());
+ -	}
+ -	return (_history && !_history->peer->allowsForwarding())
+--		|| (_message && _message->forbidsSaving());
++-		|| (_message && _message->forbidsSaving())
++-		|| (_history && _screenshotProtected);
  +	return false;
   }
 -
 + 
   bool OverlayWidget::showCopyMediaRestriction(bool skipPRemiumCheck) {
 -- 
-2.55.0
+2.56.0
 

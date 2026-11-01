@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit a594c8d60ef79280adc046760561912207e16e17
+%global commit 943f1fc76087adcfc893fb1ca3aea507df15d004
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20261013
+%global date 20261030
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -96,7 +96,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           eden
-Version:        0.2.0.381
+Version:        0.2.0.411
 Epoch:          1
 Release:        1%{?dist}
 Summary:        A NX Emulator

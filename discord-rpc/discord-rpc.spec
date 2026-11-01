@@ -6,7 +6,7 @@
 
 Name:           discord-rpc
 Version:        3.4.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Discord Rich Presence library
 
 License:        MIT
@@ -16,6 +16,7 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 
 Patch0:         0001-cmake-shared-fixes.patch
 Patch1:         0001-cmake-use-system-libraries.patch
+Patch500:       https://github.com/PCSX2/pcsx2/commit/25af0cd7457c7fdcb7c6b5611c1088e9878f4c16.patch#/%{name}-gh-pcsx2-25af0cd.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -38,7 +39,10 @@ developing applications that use %{name}.
 
 
 %prep
-%autosetup -n %{name}-%{commit} -p1
+%autosetup -n %{name}-%{commit} -N -p1
+%autopatch -M 499 -p1
+
+%patch -P 500 -p3
 
 rm -rf thirdparty/
 

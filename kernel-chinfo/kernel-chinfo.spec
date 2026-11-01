@@ -203,7 +203,7 @@ Summary: The Linux kernel
 %global released_kernel 1
 
 # define buildid .local
-%define specrpmversion 7.3.0
+%define specrpmversion 7.3.1
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1282,6 +1282,57 @@ Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2002: %{zen_url}/commit/e2a626c293d7650eb49bb3c48983a4cd0ae58cc0.patch#/zen-v%{patchversion}-sauce-e2a626c.patch
 Patch2003: %{zen_url}/commit/3948334070051d9a4c5dfefdbc20af3bc2cfd714.patch#/zen-v%{patchversion}-sauce-3948334.patch
 Patch2004: %{zen_url}/commit/faabc222990250f183a2710f7eb59633c3b73786.patch#/zen-v%{patchversion}-sauce-faabc22.patch
+# zram-zcomp
+Patch2010: %{zen_url}/commit/26ad6d24ee8939e7a9a10af040256e22ddecc24d.patch#/zen-v%{patchversion}-zram-26ad6d2.patch
+Patch2011: %{zen_url}/commit/095cf8d999f6fa46ebd7edc1abe77178aa43d303.patch#/zen-v%{patchversion}-zram-095cf8d.patch
+Patch2012: %{zen_url}/commit/2e7096aae2ee6db1290447852b629cf9fa3956c9.patch#/zen-v%{patchversion}-zram-2e7096a.patch
+Patch2013: %{zen_url}/commit/b166070ca95ed2e79ab19a0eb99a6ba304c768e7.patch#/zen-v%{patchversion}-zram-b166070.patch
+Patch2014: %{zen_url}/commit/f35f5b5717a8c9f1eb3006ae72857cf805df90d2.patch#/zen-v%{patchversion}-zram-f35f5b5.patch
+Patch2015: %{zen_url}/commit/a0e301d3c3d01beb74a1a540aa7dc57b2184a61f.patch#/zen-v%{patchversion}-zram-a0e301d.patch
+Patch2016: %{zen_url}/commit/1d20d58f5b230f35b42dc7f2a3ee1ef5e28414c8.patch#/zen-v%{patchversion}-zram-1d20d58.patch
+Patch2017: %{zen_url}/commit/07960781c4b3f2cc2278851e00309b53fd7218c8.patch#/zen-v%{patchversion}-zram-0796078.patch
+Patch2018: %{zen_url}/commit/28fc1a4db52affb844c6d86c6dc33ffc0afd3a04.patch#/zen-v%{patchversion}-zram-28fc1a4.patch
+Patch2019: %{zen_url}/commit/299ffa2ffd274090bc68397362f1035e6cc9c56d.patch#/zen-v%{patchversion}-zram-299ffa2.patch
+Patch2020: %{zen_url}/commit/21a64522150f4ee123ba6c02fabb3cccbc8805d8.patch#/zen-v%{patchversion}-zram-21a6452.patch
+Patch2021: %{zen_url}/commit/a87d46bfe21c4f191a8f4069ab8acb6b54673224.patch#/zen-v%{patchversion}-zram-a87d46b.patch
+Patch2022: %{zen_url}/commit/2a4029601760bd445c7b19b8d81cbe1d23a7b0f8.patch#/zen-v%{patchversion}-zram-2a40296.patch
+Patch2023: %{zen_url}/commit/77c0614b7cb29faf0a7df6a8557bb3d3b1d2d656.patch#/zen-v%{patchversion}-zram-77c0614.patch
+# zswap-contention
+Patch2030: %{zen_url}/commit/e922982a0673fde3c101cbf78052ba04ec6818c7.patch#/zen-v%{patchversion}-zswap-e922982.patch
+Patch2031: %{zen_url}/commit/b3c3da739df84444d9e99176c7de1ef40a006408.patch#/zen-v%{patchversion}-zswap-b3c3da7.patch
+Patch2032: %{zen_url}/commit/5c01061ded931db834e20961cb863ac57fc38e35.patch#/zen-v%{patchversion}-zswap-5c01061.patch
+# mglru-fg
+Patch2040: %{zen_url}/commit/a950fe230ff0c87d96906fdf878ccca93abd42d0.patch#/zen-v%{patchversion}-mglru-a950fe2.patch
+Patch2041: %{zen_url}/commit/1c4a92efaff01b88e96d68bfe713bcaf1865a9a9.patch#/zen-v%{patchversion}-mglru-1c4a92e.patch
+Patch2042: %{zen_url}/commit/2dc022af8d56817fe27f5a93f843cde05e9a00d2.patch#/zen-v%{patchversion}-mglru-2dc022a.patch
+Patch2043: %{zen_url}/commit/db254582d1b6abbc69513c377d59e490dfe49d88.patch#/zen-v%{patchversion}-mglru-db25458.patch
+Patch2044: %{zen_url}/commit/8499cd01d85f6503d7db416369aabf3ebca2d8ba.patch#/zen-v%{patchversion}-mglru-8499cd0.patch
+Patch2045: %{zen_url}/commit/90347e173113e588008a95e5a19e7e7656dc9514.patch#/zen-v%{patchversion}-mglru-90347e1.patch
+Patch2046: %{zen_url}/commit/9e36f947ff9248212a3af5450f94b9d547c15071.patch#/zen-v%{patchversion}-mglru-9e36f94.patch
+Patch2047: %{zen_url}/commit/3afbccef46d29a06fc55d4aa9eaf4a43e8d9951f.patch#/zen-v%{patchversion}-mglru-3afbcce.patch
+Patch2048: %{zen_url}/commit/a6e813320db37f714558167717d769418ddbeb80.patch#/zen-v%{patchversion}-mglru-a6e8133.patch
+Patch2049: %{zen_url}/commit/d3ba267d1c3058920c5d53bdc6fa32007edb3b81.patch#/zen-v%{patchversion}-mglru-d3ba267.patch
+Patch2050: %{zen_url}/commit/2884e0b43a5c328aec7e3fcf5a328c7a3594b09d.patch#/zen-v%{patchversion}-mglru-2884e0b.patch
+Patch2051: %{zen_url}/commit/5bba0e96f456b073e0fcc59acdd56955f845b8d1.patch#/zen-v%{patchversion}-mglru-5bba0e9.patch
+Patch2052: %{zen_url}/commit/5b612cb0cb53d0071756fad39bc3616157ae9ae7.patch#/zen-v%{patchversion}-mglru-5b612cb.patch
+Patch2053: %{zen_url}/commit/02fd8382df0fbb85e8bfd5785a58d83986443066.patch#/zen-v%{patchversion}-mglru-02fd838.patch
+Patch2054: %{zen_url}/commit/52c8c98c84d811cc01c11a2d28bb2de2cff74d67.patch#/zen-v%{patchversion}-mglru-52c8c98.patch
+Patch2055: %{zen_url}/commit/ca18ce070a3a68c8ed3d4dd011b9993007c285b5.patch#/zen-v%{patchversion}-mglru-ca18ce0.patch
+Patch2056: %{zen_url}/commit/58d0294ede981fdddf8163900440887838097ef1.patch#/zen-v%{patchversion}-mglru-58d0294.patch
+Patch2057: %{zen_url}/commit/3e21218556778907f06dfa833bf881773cd3dffc.patch#/zen-v%{patchversion}-mglru-3e21218.patch
+Patch2058: %{zen_url}/commit/55922f9def9fc7432bdb094c6ea85b2105e6c1c2.patch#/zen-v%{patchversion}-mglru-55922f9.patch
+Patch2059: %{zen_url}/commit/ddc9af4b7e9bff8d3457cc399e0d4457be41689b.patch#/zen-v%{patchversion}-mglru-ddc9af4.patch
+Patch2060: %{zen_url}/commit/2db1a6c8be9d003bc549e3f4f312fb144a064b1a.patch#/zen-v%{patchversion}-mglru-2db1a6c.patch
+Patch2061: %{zen_url}/commit/63586379497c3ef1108567b3c9e577df83c27956.patch#/zen-v%{patchversion}-mglru-6358637.patch
+Patch2062: %{zen_url}/commit/5d6f442e63f7301f2d2809f181fc90822b9b16fa.patch#/zen-v%{patchversion}-mglru-5d6f442.patch
+Patch2063: %{zen_url}/commit/35f5abda349d1b668f5d069ac4a74c8599213807.patch#/zen-v%{patchversion}-mglru-35f5abd.patch
+Patch2064: %{zen_url}/commit/4c688d584384a75d2a369b3ac27fdf0978508440.patch#/zen-v%{patchversion}-mglru-4c688d5.patch
+Patch2065: %{zen_url}/commit/8ed084f166127fe4305a7c1634cf109ec6654400.patch#/zen-v%{patchversion}-mglru-8ed084f.patch
+Patch2066: %{zen_url}/commit/6d374f1c0995a0c5775d1a47e8c93e880ad4c6ff.patch#/zen-v%{patchversion}-mglru-6d374f1.patch
+Patch2067: %{zen_url}/commit/a6d8cd6cf9502323d8f4f15df1505f369af69183.patch#/zen-v%{patchversion}-mglru-a6d8cd6.patch
+Patch2068: %{zen_url}/commit/0bb79c27b3df116c04124af95548021cfae9dc89.patch#/zen-v%{patchversion}-mglru-0bb79c2.patch
+Patch2069: %{zen_url}/commit/394cd0e5b16c88ba81d15f53e368a9237d88cb68.patch#/zen-v%{patchversion}-mglru-394cd0e.patch
+Patch2070: %{zen_url}/commit/5bcfc49e533b1f416d1ca87f1de9093990df777b.patch#/zen-v%{patchversion}-mglru-5bcfc49.patch
 
 # Add native cpu gcc optimization support
 Patch6000: 0001-kbuild-support-x86_64-ISA-levels.patch
@@ -2292,6 +2343,57 @@ ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2002}
 %dnl ApplyPatch %{PATCH2003}
 ApplyPatch %{PATCH2004}
+
+ApplyPatch %{PATCH2010}
+ApplyPatch %{PATCH2011}
+ApplyPatch %{PATCH2012}
+ApplyPatch %{PATCH2013}
+ApplyPatch %{PATCH2014}
+ApplyPatch %{PATCH2015}
+ApplyPatch %{PATCH2016}
+ApplyPatch %{PATCH2017}
+ApplyPatch %{PATCH2018}
+ApplyPatch %{PATCH2019}
+ApplyPatch %{PATCH2020}
+ApplyPatch %{PATCH2021}
+ApplyPatch %{PATCH2022}
+ApplyPatch %{PATCH2023}
+
+ApplyPatch %{PATCH2030}
+ApplyPatch %{PATCH2031}
+ApplyPatch %{PATCH2032}
+
+ApplyPatch %{PATCH2040}
+ApplyPatch %{PATCH2041}
+ApplyPatch %{PATCH2042}
+ApplyPatch %{PATCH2043}
+ApplyPatch %{PATCH2044}
+ApplyPatch %{PATCH2045}
+ApplyPatch %{PATCH2046}
+ApplyPatch %{PATCH2047}
+ApplyPatch %{PATCH2048}
+ApplyPatch %{PATCH2049}
+ApplyPatch %{PATCH2050}
+ApplyPatch %{PATCH2051}
+ApplyPatch %{PATCH2052}
+ApplyPatch %{PATCH2053}
+ApplyPatch %{PATCH2054}
+ApplyPatch %{PATCH2055}
+ApplyPatch %{PATCH2056}
+ApplyPatch %{PATCH2057}
+ApplyPatch %{PATCH2058}
+ApplyPatch %{PATCH2059}
+ApplyPatch %{PATCH2060}
+ApplyPatch %{PATCH2061}
+ApplyPatch %{PATCH2062}
+ApplyPatch %{PATCH2063}
+ApplyPatch %{PATCH2064}
+ApplyPatch %{PATCH2065}
+ApplyPatch %{PATCH2066}
+ApplyPatch %{PATCH2067}
+ApplyPatch %{PATCH2068}
+ApplyPatch %{PATCH2069}
+ApplyPatch %{PATCH2070}
 
 ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}
@@ -5059,6 +5161,9 @@ fi\
 #
 #
 %changelog
+* Fri Oct 30 2026 Phantom X <megaphantomx at hotmail dot com> - 7.3.1-500.chinfo
+- 7.3.1
+
 * Mon Oct 19 2026 Phantom X <megaphantomx at hotmail dot com> - 7.3.0-500.chinfo
 - 7.3.0
 
