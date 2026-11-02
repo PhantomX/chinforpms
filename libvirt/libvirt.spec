@@ -292,7 +292,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 12.8.0
+Version: 12.9.0
 Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
@@ -1382,6 +1382,10 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            %{?arg_remote_mode} \
            -Ddriver_interface=enabled \
            -Ddriver_network=enabled \
+           -Ddriver_nodedev=enabled \
+           -Ddriver_nwfilter=enabled \
+           -Ddriver_secret=enabled \
+           -Ddriver_storage=enabled \
            -Dstorage_fs=enabled \
            -Dstorage_lvm=enabled \
            -Dstorage_iscsi=enabled \
@@ -1464,9 +1468,12 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Ddriver_libxl=disabled \
   -Ddriver_lxc=disabled \
   -Ddriver_network=disabled \
+  -Ddriver_nodedev=disabled \
+  -Ddriver_nwfilter=disabled \
   -Ddriver_openvz=disabled \
   -Ddriver_qemu=disabled \
-  -Ddriver_secrets=disabled \
+  -Ddriver_secret=disabled \
+  -Ddriver_storage=disabled \
   -Ddriver_vbox=disabled \
   -Ddriver_vmware=disabled \
   -Ddriver_vz=disabled \
@@ -2121,6 +2128,7 @@ done
 %{_datadir}/augeas/lenses/tests/test_libvirt_lockd.aug
     %endif
 %attr(0755, root, root) %{_sbindir}/virtlockd
+%config(noreplace) %{_sysconfdir}/logrotate.d/virtlockd
 %{_mandir}/man8/virtlockd.8*
 
 %files daemon-plugin-lockd
@@ -2134,6 +2142,7 @@ done
 %{_datadir}/augeas/lenses/virtlogd.aug
 %{_datadir}/augeas/lenses/tests/test_virtlogd.aug
 %attr(0755, root, root) %{_sbindir}/virtlogd
+%config(noreplace) %{_sysconfdir}/logrotate.d/virtlogd
 %{_mandir}/man8/virtlogd.8*
 
 %files daemon-proxy
@@ -2147,6 +2156,7 @@ done
 %{_datadir}/augeas/lenses/virtproxyd.aug
 %{_datadir}/augeas/lenses/tests/test_virtproxyd.aug
 %attr(0755, root, root) %{_sbindir}/virtproxyd
+%config(noreplace) %{_sysconfdir}/logrotate.d/virtproxyd
 %{_mandir}/man8/virtproxyd.8*
 
 %files daemon-config-network
@@ -2169,6 +2179,7 @@ done
 %{_unitdir}/virtinterfaced-ro.socket
 %{_unitdir}/virtinterfaced-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtinterfaced
+%config(noreplace) %{_sysconfdir}/logrotate.d/virtinterfaced
 %ghost %dir %attr(0700, root, root) %{_rundir}/libvirt/interface/
 %{_libdir}/libvirt/connection-driver/libvirt_driver_interface.so
 %{_mandir}/man8/virtinterfaced.8*
@@ -2185,6 +2196,7 @@ done
 %{_unitdir}/virtnetworkd-ro.socket
 %{_unitdir}/virtnetworkd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtnetworkd
+%config(noreplace) %{_sysconfdir}/logrotate.d/virtnetworkd
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/autostart
@@ -2211,6 +2223,7 @@ done
 %{_unitdir}/virtnodedevd-ro.socket
 %{_unitdir}/virtnodedevd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtnodedevd
+%config(noreplace) %{_sysconfdir}/logrotate.d/virtnodedevd
 %ghost %dir %attr(0700, root, root) %{_rundir}/libvirt/nodedev/
 %{_libdir}/libvirt/connection-driver/libvirt_driver_nodedev.so
 %{_mandir}/man8/virtnodedevd.8*
@@ -2227,6 +2240,7 @@ done
 %{_unitdir}/virtnwfilterd-ro.socket
 %{_unitdir}/virtnwfilterd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtnwfilterd
+%config(noreplace) %{_sysconfdir}/logrotate.d/virtnwfilterd
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/nwfilter/
 %ghost %dir %{_rundir}/libvirt/network/
 %ghost %dir %attr(0700, root, root) %{_rundir}/libvirt/nwfilter-binding/
@@ -2249,6 +2263,7 @@ done
 %dir %attr(0755, root, root) %{_unitdir}/libvirtd.service.d/
 %{_unitdir}/libvirtd.service.d/10-secret.conf
 %attr(0755, root, root) %{_sbindir}/virtsecretd
+%config(noreplace) %{_sysconfdir}/logrotate.d/virtsecretd
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/secrets/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/secrets/
 %ghost %dir %attr(0700, root, root) %{_rundir}/libvirt/secrets/
@@ -2266,6 +2281,7 @@ done
 %{_unitdir}/virtstoraged-ro.socket
 %{_unitdir}/virtstoraged-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtstoraged
+%config(noreplace) %{_sysconfdir}/logrotate.d/virtstoraged
 %attr(0755, root, root) %{_libexecdir}/libvirt_parthelper
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/storage/
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/storage/autostart/
@@ -2320,6 +2336,7 @@ done
 %{_unitdir}/virtqemud-ro.socket
 %{_unitdir}/virtqemud-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtqemud
+%config(noreplace) %{_sysconfdir}/logrotate.d/virtqemud
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/autostart/
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
@@ -2363,6 +2380,7 @@ done
 %{_unitdir}/virtlxcd-ro.socket
 %{_unitdir}/virtlxcd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtlxcd
+%config(noreplace) %{_sysconfdir}/logrotate.d/virtlxcd
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/lxc/
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/lxc/
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/lxc/autostart/
@@ -2387,6 +2405,7 @@ done
 %{_unitdir}/virtxend-ro.socket
 %{_unitdir}/virtxend-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtxend
+%config(noreplace) %{_sysconfdir}/logrotate.d/virtxend
 %config(noreplace) %{_sysconfdir}/libvirt/libxl.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.libxl
 %config(noreplace) %{_sysconfdir}/libvirt/libxl-lockd.conf
@@ -2415,6 +2434,7 @@ done
 %{_unitdir}/virtvboxd-ro.socket
 %{_unitdir}/virtvboxd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtvboxd
+%config(noreplace) %{_sysconfdir}/logrotate.d/virtvboxd
 %{_libdir}/libvirt/connection-driver/libvirt_driver_vbox.so
 %{_mandir}/man8/virtvboxd.8*
     %endif
@@ -2459,6 +2479,7 @@ done
     %if %{with_ch}
 %files daemon-driver-ch
 %attr(0755, root, root) %{_sbindir}/virtchd
+%config(noreplace) %{_sysconfdir}/logrotate.d/virtchd
 %config(noreplace) %{_sysconfdir}/libvirt/virtchd.conf
 %{_datadir}/augeas/lenses/virtchd.aug
 %{_datadir}/augeas/lenses/tests/test_virtchd.aug
@@ -2691,6 +2712,9 @@ done
 
 
 %changelog
+* Mon Nov 02 2026 Phantom X <megaphantomx at hotmail dot com> - 12.9.0-100
+- 12.9.0
+
 * Fri Oct 02 2026 Phantom X <megaphantomx at hotmail dot com> - 12.8.0-100
 - 12.8.0
 

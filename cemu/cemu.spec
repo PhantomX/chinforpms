@@ -12,13 +12,13 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 8508c625407e80a5a7fcb9cf02c5355d018ff64b
+%global commit 3f8dd913cfd4c8247ad65ab41ba6ef0a55926769
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240920
-%bcond snapshot 0
+%global date 20261101
+%bcond snapshot 1
 
 # Enable system fmt
-%bcond fmt 0
+%bcond fmt 1
 
 %global commit1 f65bcf481ab34cd07d3909aab1479f409fa79f2f
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -28,27 +28,31 @@
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global fmt_ver 11.1.3
-%global vkh_ver 1.3.240
+%global fmt_ver 12.1.0
+%global vkh_ver 1.4.354
 
 %global vc_url   https://github.com/cemu-project/Cemu
 
 %global pkgname Cemu
 %global appname info.%{name}.%{pkgname}
 
-%global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
-%global vermajor   %%(echo %%{ver} | cut -s -d. -f1)
-%global verminor   %%(echo %%{ver} | cut -s -d. -f2 | cut -d- -f1)
-%global verpatch   %%(echo %%{ver} | cut -s -d- -f2)
+%dnl %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
+%global vermajor   %%(echo %{version} | cut -s -d. -f1)
+%global verminor   %%(echo %{version} | cut -s -d. -f2)
+%global verpatch   %%(echo %{version} | cut -s -d. -f3)
 
 Name:           cemu
-Version:        2.6
+Version:        2.6.406
 Release:        1%{?dist}
 Summary:        A Wii U Emulator
 
 License:        MPL-2.0 AND MIT AND MIT-0 AND Apache-2.0
 URL:            https://cemu.info/
 
+%if "0%{verpatch}" == "0"
+%global verx 1
+%endif
+%global ver        %%{vermajor}.%%{verminor}%{!?verx:-%%{verpatch}}
 %if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
@@ -82,7 +86,7 @@ BuildRequires:  pkgconfig(bluez)
 BuildRequires:  boost-devel
 BuildRequires:  cmake(cubeb)
 %if %{with fmt}
-BuildRequires:  cmake(fmt) >= 9.1.0
+BuildRequires:  cmake(fmt) >= 12.1
 %else
 Provides:       bundled(fmt) = %{fmt_ver}
 %endif
@@ -101,11 +105,11 @@ BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(pugixml)
 BuildRequires:  cmake(RapidJSON)
-BuildRequires:  pkgconfig(sdl2) >= 2.30.0
+BuildRequires:  pkgconfig(sdl3)
 BuildRequires:  cmake(VulkanHeaders) >= %{vkh_ver}
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-protocols)
-BuildRequires:  wxGTK-devel >= 3.2
+BuildRequires:  wxGTK33-devel >= 3.3
 BuildRequires:  pkgconfig(zarchive)
 BuildRequires:  pkgconfig(zlib)
 
@@ -151,7 +155,7 @@ sed -e '/FMT_HEADER_ONLY/d' -i src/Common/precompiled.h
 %endif
 
 sed -e '/CMAKE_INTERPROCEDURAL_OPTIMIZATION/s| ON| OFF|g' -i CMakeLists.txt
-sed -e '/set/s|"glslang"|"glslang::SPIRV"|' -i src/Cafe/CMakeLists.txt
+sed -e '/set/s|"glslang::glslang"|"glslang::SPIRV"|' -i src/Cafe/CMakeLists.txt
 
 %build
 %cmake \
@@ -161,6 +165,7 @@ sed -e '/set/s|"glslang"|"glslang::SPIRV"|' -i src/Cafe/CMakeLists.txt
   -DALLOW_PORTABLE:BOOL=OFF \
   -DEMULATOR_VERSION_MAJOR="%{vermajor}" \
   -DEMULATOR_VERSION_MINOR="%{verminor}" \
+  %{!?verx:-DEMULATOR_VERSION_PATCH="%{verpatch}"} \
 %{nil}
 
 %cmake_build
@@ -209,6 +214,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Mon Nov 02 2026 Phantom X <megaphantomx at hotmail dot com> - 2.6.406-1.20261101git3f8dd91
+- 2.6-406
+- wxGTK 3.3
+- SDL3
+
 * Sat Feb 08 2025 Phantom X <megaphantomx at hotmail dot com> - 2.6-1
 - 2.6
 
