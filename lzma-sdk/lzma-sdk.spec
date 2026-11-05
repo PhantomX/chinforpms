@@ -9,14 +9,14 @@
 %global sisong_url https://github.com/sisong/lzma
 
 Name:           lzma-sdk%{?packver}
-Version:        26.03
+Version:        26.05
 Release:        100%{?dist}
 Summary:        SDK for lzma compression
 
 License:        LGPL-2.1-only
 URL:            https://www.7-zip.org
 
-Source0:        %{url}/a/lzma%{ver}.7z
+Source0:        https://github.com/ip7z/7zip/releases/download/%{version}/lzma%{ver}.7z
 Source1:        lzma-sdk-LICENSE.fedora
 
 Patch0:         0001-Build-shared-library.patch
@@ -157,6 +157,9 @@ install -pm0644 *.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Wed Nov 04 2026 Phantom X <megaphantomx at hotmail dot com> - 26.05-100
+- 26.05
+
 * Tue Sep 08 2026 Phantom X <megaphantomx at hotmail dot com> - 26.03-100
 - 26.03
 

@@ -13,7 +13,7 @@ BuildArch:      noarch
 
 Summary:        Easy to integrate Vulkan memory allocation library
 Name:           VulkanMemoryAllocator
-Version:        3.4.0
+Version:        3.5.0
 Release:        100%{?dist}
 Epoch:          1
 
@@ -85,6 +85,9 @@ sed -e '/\/doc\//d' -i CMakeLists.txt
 
 
 %changelog
+* Wed Nov 04 2026 Phantom X <megaphantomx at hotmail dot com> - 1:3.5.0-100
+- 3.5.0
+
 * Tue Sep 15 2026 Phantom X <megaphantomx at hotmail dot com> - 1:3.4.0-100
 - 3.4.0
 

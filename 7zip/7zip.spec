@@ -27,7 +27,7 @@
 %global ver     %%(echo %{version} | tr -d '.')
 
 Name:           7zip
-Version:        26.03
+Version:        26.05
 Release:        100%{?dist}
 Summary:        A file archiver
 
@@ -37,7 +37,7 @@ License:        LGPL-2.1-or-later AND BSD-3-Clause AND LicenseRef-Fedora-Public-
 URL:            https://www.7-zip.org
 
 %if 0%{sanitize}
-Source0:        %{url}/a/7z%{ver}-src.7z
+Source0:        https://github.com/ip7z/7zip/releases/download/%{version}/7z%{ver}-src.tar.xz
 %else
 # Use Makefile to download
 Source0:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{src_pkg}/%{src_hash}/%{src_pkg}
@@ -192,6 +192,9 @@ install -pm0755 CPP/7zip/Bundles/SFXCon/b/g/7zCon %{buildroot}%{_libexecdir}/%{n
 
 
 %changelog
+* Wed Nov 04 2026 Phantom X <megaphantomx at hotmail dot com> - 1:26.05-100
+- 26.05
+
 * Tue Sep 08 2026 Phantom X <megaphantomx at hotmail dot com> - 1:26.03-100
 - 26.03
 

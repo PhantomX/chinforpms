@@ -1,4 +1,4 @@
-From 425d7d5bf02e32adcc305afa3da6bb4f4dda50aa Mon Sep 17 00:00:00 2001
+From 2a1aa1ae688874bd8ac167007f0c1c98118aed85 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 9 Sep 2025 18:48:43 -0300
 Subject: [PATCH] Use system libraries
@@ -8,11 +8,11 @@ Subject: [PATCH] Use system libraries
  externals/CMakeLists.txt         | 28 +++++++++++++++++++------
  externals/ffmpeg/CMakeLists.txt  |  5 +++++
  externals/nx_tzdb/CMakeLists.txt |  2 +-
- src/dynarmic/CMakeLists.txt      |  6 ------
- 5 files changed, 54 insertions(+), 22 deletions(-)
+ src/dynarmic/CMakeLists.txt      |  4 ----
+ 5 files changed, 54 insertions(+), 20 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index f647204..e00ba98 100644
+index 29c2b38..cbb6b52 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -410,12 +410,13 @@ set(ENABLE_TESTING OFF)
@@ -128,7 +128,7 @@ index f647204..e00ba98 100644
  
  if (NOT YUZU_STATIC_ROOM AND NOT (YUZU_USE_BUNDLED_FFMPEG OR YUZU_USE_EXTERNAL_FFMPEG))
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index a211b7f..a351d27 100644
+index cb1dece..881436e 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -25,6 +25,7 @@ set(BUILD_SHARED_LIBS OFF)
@@ -147,7 +147,7 @@ index a211b7f..a351d27 100644
  
  # stb
  add_library(stb stb/stb_dxt.cpp)
-@@ -62,7 +64,8 @@ endif()
+@@ -67,7 +69,8 @@ endif()
  if (IOS)
      set(HTTPLIB_USE_BROTLI_IF_AVAILABLE OFF)
  endif()
@@ -157,7 +157,7 @@ index a211b7f..a351d27 100644
  
  if (YUZU_STATIC_ROOM)
      return()
-@@ -83,11 +86,13 @@ if (ARCHITECTURE_loongarch64)
+@@ -88,11 +91,13 @@ if (ARCHITECTURE_loongarch64)
      AddJsonPackage(lagoon)
  endif()
  
@@ -171,7 +171,7 @@ index a211b7f..a351d27 100644
  
  # DiscordRPC
  if (USE_DISCORD_PRESENCE)
-@@ -104,8 +109,9 @@ if (USE_DISCORD_PRESENCE)
+@@ -109,8 +114,9 @@ if (USE_DISCORD_PRESENCE)
  endif()
  
  # SimpleIni
@@ -182,7 +182,7 @@ index a211b7f..a351d27 100644
  # Most linux distros don't package cubeb, so enable regardless of cpm settings
  if(ENABLE_CUBEB)
      AddJsonPackage(cubeb)
-@@ -135,6 +141,7 @@ if(ENABLE_CUBEB)
+@@ -140,6 +146,7 @@ if(ENABLE_CUBEB)
          add_library(cubeb::cubeb ALIAS cubeb)
      endif()
  endif()
@@ -190,7 +190,7 @@ index a211b7f..a351d27 100644
  
  if (NOT YUZU_USE_BUNDLED_SDL3)
      if (NOT WIN32)
-@@ -157,7 +164,7 @@ if (NOT YUZU_USE_BUNDLED_SDL3)
+@@ -162,7 +169,7 @@ if (NOT YUZU_USE_BUNDLED_SDL3)
          set(SDL_FILE ON)
      endif()
  
@@ -199,7 +199,7 @@ index a211b7f..a351d27 100644
  else()
      message(STATUS "Using bundled SDL3")
      AddJsonPackage(sdl3-ci)
-@@ -181,9 +188,10 @@ if (NOT TARGET SDL3::SDL3)
+@@ -186,9 +193,10 @@ if (NOT TARGET SDL3::SDL3)
  endif()
  
  # SPIRV Headers
@@ -211,7 +211,7 @@ index a211b7f..a351d27 100644
  if (YUZU_USE_BUNDLED_SIRIT)
      AddJsonPackage(sirit-ci)
  else()
-@@ -194,6 +202,7 @@ else()
+@@ -199,6 +207,7 @@ else()
          )
      endif()
  endif()
@@ -219,7 +219,7 @@ index a211b7f..a351d27 100644
  
  # reshadefx
  if (ENABLE_RESHADE)
-@@ -241,7 +250,7 @@ endif()
+@@ -246,7 +255,7 @@ endif()
  
  # Catch2
  if (YUZU_TESTS OR DYNARMIC_TESTS)
@@ -228,7 +228,7 @@ index a211b7f..a351d27 100644
  endif()
  
  # getopt
-@@ -253,6 +262,7 @@ endif()
+@@ -258,6 +267,7 @@ endif()
  add_subdirectory(glad)
  
  # libusb
@@ -236,7 +236,7 @@ index a211b7f..a351d27 100644
  if (ENABLE_LIBUSB)
      add_subdirectory(libusb)
  endif()
-@@ -271,10 +281,14 @@ if (VulkanMemoryAllocator_ADDED)
+@@ -276,10 +286,14 @@ if (VulkanMemoryAllocator_ADDED)
          )
      endif()
  endif()
@@ -252,7 +252,7 @@ index a211b7f..a351d27 100644
  endif()
  
  # FFMpeg
-@@ -309,6 +323,7 @@ if (ANDROID AND ARCHITECTURE_arm64)
+@@ -314,6 +328,7 @@ if (ANDROID AND ARCHITECTURE_arm64)
      AddJsonPackage(libadrenotools)
  endif()
  
@@ -260,7 +260,7 @@ index a211b7f..a351d27 100644
  AddJsonPackage(gamemode)
  
  if (gamemode_ADDED)
-@@ -316,6 +331,7 @@ if (gamemode_ADDED)
+@@ -321,6 +336,7 @@ if (gamemode_ADDED)
      target_include_directories(gamemode INTERFACE ${gamemode_SOURCE_DIR}/lib)
      add_library(gamemode::headers ALIAS gamemode)
  endif()
@@ -302,29 +302,27 @@ index a82bf0b..5f4a39c 100644
      AddJsonPackage(tzdb)
  
 diff --git a/src/dynarmic/CMakeLists.txt b/src/dynarmic/CMakeLists.txt
-index bacbd7a..7d80b74 100644
+index 0837a50..2138b54 100644
 --- a/src/dynarmic/CMakeLists.txt
 +++ b/src/dynarmic/CMakeLists.txt
-@@ -119,8 +119,6 @@ if (NOT Boost_FOUND)
+@@ -101,7 +101,6 @@ endif()
+ if (NOT Boost_FOUND)
      find_package(Boost 1.57 REQUIRED)
  endif()
- 
 -find_package(fmt 8 CONFIG)
--
- if ("arm64" IN_LIST ARCHITECTURE OR DYNARMIC_TESTS)
+ 
+ if (ARCHITECTURE_arm64)
      find_package(oaknut 2.0.1 CONFIG)
- endif()
-@@ -133,10 +131,6 @@ if ("loongarch64" IN_LIST ARCHITECTURE)
+@@ -112,9 +111,6 @@ endif()
+ if (ARCHITECTURE_loongarch64)
      find_package(lagoon REQUIRED)
  endif()
- 
--if ("x86_64" IN_LIST ARCHITECTURE)
+-if (ARCHITECTURE_x86_64)
 -    find_package(xbyak 7 CONFIG)
 -endif()
--
+ 
  if (DYNARMIC_USE_LLVM)
      find_package(LLVM REQUIRED)
-     separate_arguments(LLVM_DEFINITIONS)
 -- 
-2.55.0
+2.56.0
 

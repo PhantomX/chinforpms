@@ -12,9 +12,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit ca2daeae8e949a9bd7eba56b4c2b639afe5b1a0e
+%global commit f34f11ee44cf04622826d27921a1ff0a02b8ba33
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260917
+%global date 20261104
 
 %bcond capstone 0
 %bcond ffmpeg 0
@@ -59,7 +59,7 @@
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 dynarmic
 
-%global commit17 e74419374a148684911404792379cac284f3f603
+%global commit17 eaf918c97e76d3fa7ec5bfea63a307fced559e76
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 ffmpeg-core
 
@@ -119,7 +119,7 @@
 %global shortcommit34 %(c=%{commit34}; echo ${c:0:7})
 %global srcname34 concurrentqueue
 
-%global commit35 79524ddd08a4ec981b7fea76afd08ee05f83755d
+%global commit35 d6c93f38a08b4ea0f8ffcfd7f7857307d5d5c3fa
 %global shortcommit35 %(c=%{commit35}; echo ${c:0:7})
 %global srcname35 spdlog
 
@@ -160,7 +160,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.2.0.4096
+Version:        0.2.0.4263
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator
 
@@ -511,22 +511,19 @@ rm -rf %{buildroot}%{_includedir}
 rm -rf %{buildroot}%{_libdir}
 rm -rf %{buildroot}%{_datadir}/cmake
 
-%find_lang %{name} --with-qt
-
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
 
 
-%files -f %{name}.lang
+%files
 %license COPYING.txt external/{COPYING,LICENSE,copyright}.*
 %doc README.md
 %{_bindir}/%{pkgname}
 %{_datadir}/%{pkgname}/data
 %{_datadir}/%{pkgname}/icons
 %{_datadir}/%{pkgname}/shaders-builtin
-%dir %{_datadir}/%{pkgname}/translations
 %{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{appname}.*
 %{_metainfodir}/%{appname}.metainfo.xml

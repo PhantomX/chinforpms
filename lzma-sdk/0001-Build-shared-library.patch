@@ -99,11 +99,11 @@ index 195d23d..7fb23d1 100644
  $(O):
  	$(MY_MKDIR) $(O)
 @@ -157,12 +128,14 @@ ifneq ($(CC), $(CROSS_COMPILE)clang)
- LFLAGS_STRIP = -s
+ LFLAGS_SRC_VER := -Wl,-source_version,$(SRC_VER)
  endif
  
--LFLAGS_ALL = $(LFLAGS_STRIP) $(MY_ARCH_2) $(LDFLAGS) $(FLAGS_FLTO) $(LD_arch) $(OBJS) $(MY_LIBS) $(LIB2)
-+LFLAGS_ALL = $(LFLAGS_STRIP) $(LDFLAGS) $(FLAGS_FLTO) $(LD_arch) -Wl,-z,defs $(OBJS) $(MY_LIBS) $(LIB2)
+-LFLAGS_ALL = $(LFLAGS_STRIP) $(MY_ARCH_2) $(LDFLAGS) $(FLAGS_FLTO) $(LD_arch) $(LFLAGS_SRC_VER) $(OBJS) $(MY_LIBS) $(LIB2)
++LFLAGS_ALL = $(LFLAGS_STRIP) $(LDFLAGS) $(FLAGS_FLTO) $(LD_arch) $(LFLAGS_SRC_VER) -Wl,-z,defs $(OBJS) $(MY_LIBS) $(LIB2)
  $(PROGPATH): $(OBJS)
  	$(CC) -o $(PROGPATH) $(LFLAGS_ALL)
  

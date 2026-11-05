@@ -1,5 +1,5 @@
 Name:           sirit
-Version:        1.0.5
+Version:        1.0.7
 Release:        1%{?dist}
 Summary:        A runtime SPIR-V assembler
 
@@ -62,6 +62,9 @@ sed -e 's|_RPM_VERSION_|%{version}|' -i CMakeLists.txt
 
 
 %changelog
+* Wed Nov 04 2026 Phantom X <megaphantomx at hotmail dot com> - 1.0.7-1
+- 1.0.7
+
 * Fri Mar 27 2026 Phantom X <megaphantomx at hotmail dot com> - 1.0.5-1
 - 1.0.5
 

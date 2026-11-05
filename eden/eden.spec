@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 943f1fc76087adcfc893fb1ca3aea507df15d004
+%global commit 5df599128d6828fa0e42968909da848c255d22b1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20261030
+%global date 20261103
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -96,7 +96,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           eden
-Version:        0.2.0.411
+Version:        0.2.0.432
 Epoch:          1
 Release:        1%{?dist}
 Summary:        A NX Emulator
@@ -442,7 +442,6 @@ echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' 
   -DENABLE_WERROR:BOOL=OFF \
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
-  -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \
   -DDYNARMIC_TESTS:BOOL=OFF \
 %{nil}
 

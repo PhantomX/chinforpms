@@ -3,8 +3,8 @@ index d8c623a..e5b6833 100644
 --- a/Telegram/CMakeLists.txt
 +++ b/Telegram/CMakeLists.txt
 @@ -63,7 +63,7 @@ generate_styles(Telegram ${src_loc} "${style_files}" "${dependent_style_files}")
-     endif()
- endif()
+ include(cmake/test_iv_editor_table_grid.cmake)
+ include(cmake/test_wallet_phrase_shares.cmake)
  
 -set_target_properties(Telegram PROPERTIES AUTOMOC ON)
 +set_target_properties(Telegram PROPERTIES AUTOMOC ON SKIP_BUILD_RPATH ON)
