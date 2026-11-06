@@ -1,7 +1,7 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder
-Version:        6.1.4
+Version:        6.1.7
 Release:        1%{dist}
 Summary:        A shadowplay-like screen recorder
 
@@ -89,6 +89,9 @@ Development files for %{name} plugins.
 
 
 %changelog
+* Thu Nov 05 2026 Phantom X <megaphantomx at hotmail dot com> - 6.1.7-1
+- 6.1.7
+
 * Tue Oct 13 2026 Phantom X <megaphantomx at hotmail dot com> - 6.1.4-1
 - 6.1.4
 

@@ -13,6 +13,7 @@
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 glslang
 
+%bcond 7zip 0
 %bcond portaudio 0
 %bcond qt 0
 %bcond vma 0
@@ -30,7 +31,7 @@
 
 Name:           snes9x
 Version:        1.63.228
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        SNES emulator
 
 License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0 AND MIT
@@ -49,6 +50,9 @@ Source11:       %{kg_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortc
 Patch0:         %{name}-1.56.1-unix_flags.patch
 Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-Remove-application-path-from-database-search.patch
+%if %{with 7zip}
+Patch499:       0001-Add-7zip-file-support.patch
+%endif
 
 BuildRequires:   gcc-c++
 BuildRequires:   cmake
@@ -61,6 +65,9 @@ BuildRequires:   pkgconfig(gl)
 BuildRequires:   pkgconfig(libpng)
 BuildRequires:   pkgconfig(libpulse)
 BuildRequires:   pkgconfig(libyuv)
+%if %{with 7zip}
+BuildRequires:   pkgconfig(lzmasdk-c) >= 26.05
+%endif
 BuildRequires:   pkgconfig(sdl2)
 BuildRequires:   pkgconfig(xext)
 BuildRequires:   pkgconfig(xinerama)
@@ -193,6 +200,7 @@ pushd gtk
 %if !%{with portaudio}
   -DUSE_PORTAUDIO:BOOL=OFF \
 %endif
+  %{?with_7zip:-DUSE_SEVENZIP:BOOL=ON} \
 %{nil}
 
 popd
@@ -211,6 +219,7 @@ pushd unix
 %configure \
   --with-system-zip \
   --enable-netplay \
+    %{?with_7zip:--enable-7zip=yes} \
 %{nil}
 
 popd

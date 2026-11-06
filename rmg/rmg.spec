@@ -8,7 +8,7 @@
 %global commit 3e8b366be91ea96329db0567b038a31785f33468
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20260910
-%bcond snapshot 1
+%bcond snapshot 0
 
 %bcond rust 0
 
@@ -22,8 +22,8 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.9.0
-Release:        2%{?dist}
+Version:        0.9.1
+Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
 License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only AND MIT
@@ -57,7 +57,7 @@ BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libusb-1.0)
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(lightning)
-BuildRequires:  pkgconfig(lzmasdk-c) >= 23.01
+BuildRequires:  pkgconfig(lzmasdk-c) >= 26.03
 BuildRequires:  pkgconfig(Qt6Core)
 BuildRequires:  pkgconfig(Qt6Gui)
 BuildRequires:  pkgconfig(Qt6Svg)
@@ -195,6 +195,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Thu Nov 05 2026 Phantom X <megaphantomx at hotmail dot com> - 0.9.1-1
+- 0.9.1
+
 * Mon Aug 03 2026 Phantom X <megaphantomx at hotmail dot com> - 0.9.0-1.20260729git9dced04
 - 0.9,0
 

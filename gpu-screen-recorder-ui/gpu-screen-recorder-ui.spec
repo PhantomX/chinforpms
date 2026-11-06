@@ -1,7 +1,7 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder-ui
-Version:        1.14.0
+Version:        1.15.1
 Release:        1%{dist}
 Summary:        A fullscreen overlay UI for GPU Screen Recorder
 
@@ -90,6 +90,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/gpu-screen-recorder.d
 
 
 %changelog
+* Thu Nov 05 2026 Phantom X <megaphantomx at hotmail dot com> - 1.15.1-1
+- 1.15.1
+
 * Tue Oct 13 2026 Phantom X <megaphantomx at hotmail dot com> - 1.14.0-1
 - 1.14.0
 

@@ -67,6 +67,7 @@ mesa-freeworld
 ninfs
 nstool
 nsz
+opencode-desktop
 pcsx2
 pcsx2_patches
 pkgrip
