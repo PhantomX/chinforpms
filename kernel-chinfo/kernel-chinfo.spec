@@ -203,7 +203,7 @@ Summary: The Linux kernel
 %global released_kernel 1
 
 # define buildid .local
-%define specrpmversion 7.3.1
+%define specrpmversion 7.3.3
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -5161,6 +5161,9 @@ fi\
 #
 #
 %changelog
+* Fri Nov 06 2026 Phantom X <megaphantomx at hotmail dot com> - 7.3.3-500.chinfo
+- 7.3.3
+
 * Fri Oct 30 2026 Phantom X <megaphantomx at hotmail dot com> - 7.3.1-500.chinfo
 - 7.3.1
 
