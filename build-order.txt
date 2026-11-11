@@ -77,7 +77,7 @@ curl-impersonate
 libchdr
 mesa
 -mesa-compat
-mesa-libGL-xlib
+-mesa-libGL-xlib
 -SDL2
 SDL3
 sdl_gamecontrollerdb

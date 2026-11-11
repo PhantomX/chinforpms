@@ -203,7 +203,7 @@ Summary: The Linux kernel
 %global released_kernel 1
 
 # define buildid .local
-%define specrpmversion 7.3.3
+%define specrpmversion 7.3.4
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1279,24 +1279,28 @@ Patch1014: %{opensuse_url}/ring-buffer-Do-not-check-si_mem_available-during-SYST
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2002: %{zen_url}/commit/e2a626c293d7650eb49bb3c48983a4cd0ae58cc0.patch#/zen-v%{patchversion}-sauce-e2a626c.patch
-Patch2003: %{zen_url}/commit/3948334070051d9a4c5dfefdbc20af3bc2cfd714.patch#/zen-v%{patchversion}-sauce-3948334.patch
-Patch2004: %{zen_url}/commit/faabc222990250f183a2710f7eb59633c3b73786.patch#/zen-v%{patchversion}-sauce-faabc22.patch
+Patch2001: %{zen_url}/commit/6fa021a54740daf5469632d39bdf57f135af88a6.patch#/zen-v%{patchversion}-sauce-6fa021a.patch
+Patch2002: %{zen_url}/commit/53cd61cb0e1bf907a8bb296d8dcbf4ecefad28be.patch#/zen-v%{patchversion}-sauce-53cd61c.patch
+Patch2003: %{zen_url}/commit/74ea29b37e6d6d19515412906b1289c55e6cd71b.patch#/zen-v%{patchversion}-sauce-74ea29b.patch
+Patch2004: %{zen_url}/commit/20727b0f3df8d832053c5813ee342b04d6b9d087.patch#/zen-v%{patchversion}-sauce-20727b0.patch
+Patch2005: %{zen_url}/commit/d9f25aa599055aca5573b86eaadd153551927fc5.patch#/zen-v%{patchversion}-sauce-d9f25aa.patch
 # zram-zcomp
-Patch2010: %{zen_url}/commit/26ad6d24ee8939e7a9a10af040256e22ddecc24d.patch#/zen-v%{patchversion}-zram-26ad6d2.patch
-Patch2011: %{zen_url}/commit/095cf8d999f6fa46ebd7edc1abe77178aa43d303.patch#/zen-v%{patchversion}-zram-095cf8d.patch
-Patch2012: %{zen_url}/commit/2e7096aae2ee6db1290447852b629cf9fa3956c9.patch#/zen-v%{patchversion}-zram-2e7096a.patch
-Patch2013: %{zen_url}/commit/b166070ca95ed2e79ab19a0eb99a6ba304c768e7.patch#/zen-v%{patchversion}-zram-b166070.patch
-Patch2014: %{zen_url}/commit/f35f5b5717a8c9f1eb3006ae72857cf805df90d2.patch#/zen-v%{patchversion}-zram-f35f5b5.patch
-Patch2015: %{zen_url}/commit/a0e301d3c3d01beb74a1a540aa7dc57b2184a61f.patch#/zen-v%{patchversion}-zram-a0e301d.patch
-Patch2016: %{zen_url}/commit/1d20d58f5b230f35b42dc7f2a3ee1ef5e28414c8.patch#/zen-v%{patchversion}-zram-1d20d58.patch
-Patch2017: %{zen_url}/commit/07960781c4b3f2cc2278851e00309b53fd7218c8.patch#/zen-v%{patchversion}-zram-0796078.patch
-Patch2018: %{zen_url}/commit/28fc1a4db52affb844c6d86c6dc33ffc0afd3a04.patch#/zen-v%{patchversion}-zram-28fc1a4.patch
-Patch2019: %{zen_url}/commit/299ffa2ffd274090bc68397362f1035e6cc9c56d.patch#/zen-v%{patchversion}-zram-299ffa2.patch
-Patch2020: %{zen_url}/commit/21a64522150f4ee123ba6c02fabb3cccbc8805d8.patch#/zen-v%{patchversion}-zram-21a6452.patch
-Patch2021: %{zen_url}/commit/a87d46bfe21c4f191a8f4069ab8acb6b54673224.patch#/zen-v%{patchversion}-zram-a87d46b.patch
-Patch2022: %{zen_url}/commit/2a4029601760bd445c7b19b8d81cbe1d23a7b0f8.patch#/zen-v%{patchversion}-zram-2a40296.patch
-Patch2023: %{zen_url}/commit/77c0614b7cb29faf0a7df6a8557bb3d3b1d2d656.patch#/zen-v%{patchversion}-zram-77c0614.patch
+Patch2010: %{zen_url}/commit/200f8f1d7d74cfd4059de48cc4433693b61ffe20.patch#/zen-v%{patchversion}-zram-200f8f1.patch
+Patch2011: %{zen_url}/commit/70af1e08c9407a76b29a6ac1302e0a9665fb9e0b.patch#/zen-v%{patchversion}-zram-70af1e0.patch
+Patch2012: %{zen_url}/commit/7fca813df8e8a4675c7d8951fe3dd895f22b4f2e.patch#/zen-v%{patchversion}-zram-7fca813.patch
+Patch2013: %{zen_url}/commit/e5280adba1b79c4d19cd2565bb4e81753607876d.patch#/zen-v%{patchversion}-zram-e5280ad.patch
+Patch2014: %{zen_url}/commit/4243a30ac08c891d67019c504cc6587fe38df573.patch#/zen-v%{patchversion}-zram-4243a30.patch
+Patch2015: %{zen_url}/commit/a8abcd502ea6fb5701d88da281ba8730c047373b.patch#/zen-v%{patchversion}-zram-a8abcd5.patch
+Patch2016: %{zen_url}/commit/3a7e7124be3a79029bf4a106ba0a887f5f1cb99f.patch#/zen-v%{patchversion}-zram-3a7e712.patch
+Patch2017: %{zen_url}/commit/b793291da5be81c43fd409562d1b2da9a08528e2.patch#/zen-v%{patchversion}-zram-b793291.patch
+Patch2018: %{zen_url}/commit/a41e2b727fe8ccd7447766e4baead6769051298d.patch#/zen-v%{patchversion}-zram-a41e2b7.patch
+Patch2019: %{zen_url}/commit/9042aad4d836317669f4292002fe642dd9d4ef59.patch#/zen-v%{patchversion}-zram-9042aad.patch
+Patch2020: %{zen_url}/commit/1c53ab18aa4f0502f4a0a55a62a2a785fb705037.patch#/zen-v%{patchversion}-zram-1c53ab1.patch
+Patch2021: %{zen_url}/commit/b3a9350c348196b932453b3d0d580a8869d765f1.patch#/zen-v%{patchversion}-zram-b3a9350.patch
+Patch2022: %{zen_url}/commit/8250b85394f8c30dca8546250488fbdf9cd69bef.patch#/zen-v%{patchversion}-zram-8250b85.patch
+Patch2023: %{zen_url}/commit/c232ff813b963a4a6102c9f17765a16d5b90f23b.patch#/zen-v%{patchversion}-zram-c232ff8.patch
+Patch2024: %{zen_url}/commit/b62d3928699042d809da41e8ccd88407897c6bb0.patch#/zen-v%{patchversion}-zram-b62d392.patch
+Patch2025: %{zen_url}/commit/ce9946ecb9f3190bf2b26ddce0dda21197674afa.patch#/zen-v%{patchversion}-zram-ce9946e.patch
 # zswap-contention
 Patch2030: %{zen_url}/commit/e922982a0673fde3c101cbf78052ba04ec6818c7.patch#/zen-v%{patchversion}-zswap-e922982.patch
 Patch2031: %{zen_url}/commit/b3c3da739df84444d9e99176c7de1ef40a006408.patch#/zen-v%{patchversion}-zswap-b3c3da7.patch
@@ -2340,9 +2344,11 @@ ApplyPatch %{PATCH1013}
 ApplyPatch %{PATCH1014}
 
 ApplyPatch %{PATCH2000}
+ApplyPatch %{PATCH2001}
 ApplyPatch %{PATCH2002}
-%dnl ApplyPatch %{PATCH2003}
+ApplyPatch %{PATCH2003}
 ApplyPatch %{PATCH2004}
+ApplyPatch %{PATCH2005}
 
 ApplyPatch %{PATCH2010}
 ApplyPatch %{PATCH2011}
@@ -2358,6 +2364,8 @@ ApplyPatch %{PATCH2020}
 ApplyPatch %{PATCH2021}
 ApplyPatch %{PATCH2022}
 ApplyPatch %{PATCH2023}
+ApplyPatch %{PATCH2024}
+ApplyPatch %{PATCH2025}
 
 ApplyPatch %{PATCH2030}
 ApplyPatch %{PATCH2031}
@@ -2607,6 +2615,11 @@ if [ "%{primary_target}" == "rhel" ]; then
 %endif
 fi
 update_scripts $update_target
+
+sed \
+  -e '/drivers\/scsi\/virtio_scsi.ko/i\  - drivers\/scsi\/vhba\/vhba.ko: modules' \
+  -e '/drivers\/input\/joystick\/\.\*:/i\  - drivers\/input\/joystick\/xpad.ko: modules' \
+  -i def_variants.yaml
 
 %endif
 
@@ -5161,6 +5174,9 @@ fi\
 #
 #
 %changelog
+* Tue Nov 10 2026 Phantom X <megaphantomx at hotmail dot com> - 7.3.4-500.chinfo
+- 7.3.4
+
 * Fri Nov 06 2026 Phantom X <megaphantomx at hotmail dot com> - 7.3.3-500.chinfo
 - 7.3.3
 

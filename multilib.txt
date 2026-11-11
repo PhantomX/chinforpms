@@ -26,7 +26,7 @@ libstrangle
 mangohud
 mesa
 -mesa-compat
-mesa-libGL-xlib
+-mesa-libGL-xlib
 -mingw-crt
 -mingw-headers
 -mingw-w64-tools

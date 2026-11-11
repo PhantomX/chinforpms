@@ -25,9 +25,9 @@
 %global enablejit 1
 %endif
 
-%global commit dbff13226c4143e0d48baf2f57284341002dabcf
+%global commit 60e09c28d79310e69570a5771ccef99154ee4216
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260920
+%global date 20261108
 %bcond snapshot 1
 
 %global commit3 3bab6924988e5f19bf36586a496156cf72f70d9f
@@ -99,7 +99,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2606.376
+Version:        2609.195
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -162,6 +162,7 @@ Patch11:        0001-system-library-support.patch
 
 Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
 Patch500:       %{vc_url}/pull/13443.patch#/%{name}-gh-pr13443.patch
+Patch501:       0001-pr13443-fixup.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -347,7 +348,9 @@ rm -rf \
 %if %{with mbedtls}
   rm -rf mbedtls
 %else
+%patch -P 501 -p2
 %patch -P 500 -p2
+sed -e '/dolphin_disable_warnings/d' -i mbedtls/library/CMakeLists.txt
 %endif
 
 %if %{with vulkan}

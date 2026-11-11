@@ -14,7 +14,7 @@ index 170b7e0..fdddbfe 100644
 +++ b/CMakeLists.txt
 @@ -651,6 +651,10 @@ if(ENABLE_VULKAN)
    if (ANDROID AND _M_ARM_64)
-     add_subdirectory(Externals/libadrenotools)
+     dolphin_add_bundled_library(libadrenotools Externals/libadrenotools)
    endif()
 +
 +  dolphin_find_optional_system_library(VulkanHeaders Externals/Vulkan-Headers 1.3.288)

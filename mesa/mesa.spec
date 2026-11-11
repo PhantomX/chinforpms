@@ -59,10 +59,10 @@
 %endif
 
 %if !0%{?rhel}
+%global with_gfxstream 1
 %global with_libunwind 1
 %global with_lmsensors 1
 %global with_virtio    1
-%global with_vulkan_layers_anti_lag 1
 %endif
 
 %ifarch %{valgrind_arches}
@@ -77,8 +77,8 @@
 # Set to build with versioned LLVM packages
 %dnl %global llvm_pkgver 16
 
-%global vulkan_drivers swrast%{?base_vulkan}%{?intel_platform_vulkan}%{?asahi_platform_vulkan}%{?extra_platform_vulkan}%{?with_nvk:,nouveau}%{?with_virtio:,virtio}%{?with_d3d12:,microsoft-experimental}
-%global vulkan_layers device-select,overlay%{?with_vulkan_layers_anti_lag:,anti-lag}
+%global vulkan_drivers swrast%{?base_vulkan}%{?intel_platform_vulkan}%{?asahi_platform_vulkan}%{?extra_platform_vulkan}%{?with_nvk:,nouveau}%{?with_virtio:,virtio}%{?with_gfxstream:,gfxstream}%{?with_d3d12:,microsoft-experimental}
+%global vulkan_layers device-select,overlay
 
 %if 0%{?with_nvk} && 0%{?rhel}
 %global vendor_nvk_crates 1
@@ -102,7 +102,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        26.2.6
+Version:        26.3.0
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -235,6 +235,9 @@ BuildRequires:  pkgconfig(vulkan)
 %endif
 %if 0%{?with_d3d12}
 BuildRequires:  pkgconfig(DirectX-Headers) >= 1.619.1
+%endif
+%if 0%{?with_virtio}
+BuildRequires:  venus-protocol-devel
 %endif
 
 %description
@@ -756,10 +759,6 @@ ln -s libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_system.so.0
 %license cargo-vendor.txt
 %endif
 %endif
-%if 0%{?with_vulkan_layers_anti_lag}
-%{_libdir}/libVkLayer_MESA_anti_lag.so
-%{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_anti_lag.json
-%endif
 %{_libdir}/libVkLayer_MESA_device_select.so
 %{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_device_select.json
 %if 0%{?with_virtio}
@@ -767,8 +766,13 @@ ln -s libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_system.so.0
 %{_datadir}/vulkan/icd.d/virtio_icd.*.json
 %{_datadir}/drirc.d/00-venus-defaults.conf
 %endif
+%if 0%{?with_gfxstream}
+%{_libdir}/libvulkan_gfxstream.so
+%{_datadir}/vulkan/icd.d/gfxstream_vk_icd.*.json
+%endif
 %if 0%{?with_vulkan_hw}
 %{_datadir}/drirc.d/00-radv-defaults.conf
+%{_datadir}/drirc.d/01-radv-performance.conf
 %if 0%{?with_nvk}
 %{_libdir}/libvulkan_nouveau.so
 %{_datadir}/vulkan/icd.d/nouveau_icd.*.json
@@ -829,6 +833,9 @@ ln -s libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_system.so.0
 
 
 %changelog
+* Tue Nov 10 2026 Phantom X <megaphantomx at hotmail dot com> - 26.3.0-100
+- 26.3.0
+
 * Wed Oct 28 2026 Phantom X <megaphantomx at hotmail dot com> - 26.2.6-100
 - 26.2.6
 
