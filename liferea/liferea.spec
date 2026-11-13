@@ -1,6 +1,6 @@
 Name:           liferea
 Epoch:          2
-Version:        1.16.15
+Version:        1.16.16
 Release:        100%{?dist}
 Summary:        An RSS/RDF feed reader
 
@@ -96,6 +96,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/net.sourc
 
 
 %changelog
+* Wed Nov 11 2026 Phantom X <megaphantomx at hotmail dot com> - 2:1.16.16-100
+- 1.16.16
+
 * Mon Oct 12 2026 Phantom X <megaphantomx at hotmail dot com> - 2:1.16.15-100
 - 1.16.15
 
