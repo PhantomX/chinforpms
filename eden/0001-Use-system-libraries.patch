@@ -1,26 +1,27 @@
-From 2a1aa1ae688874bd8ac167007f0c1c98118aed85 Mon Sep 17 00:00:00 2001
+From a173ee41b1f9f510e60723d1a7ac5769f4d02670 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 9 Sep 2025 18:48:43 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt                   | 35 ++++++++++++++++++++++++--------
- externals/CMakeLists.txt         | 28 +++++++++++++++++++------
- externals/ffmpeg/CMakeLists.txt  |  5 +++++
+ CMakeLists.txt                   | 25 +++++++++++++------
+ externals/CMakeLists.txt         | 42 ++++++++++++++++++++++++++------
+ externals/ffmpeg/CMakeLists.txt  |  5 ++++
  externals/nx_tzdb/CMakeLists.txt |  2 +-
- src/dynarmic/CMakeLists.txt      |  4 ----
- 5 files changed, 54 insertions(+), 20 deletions(-)
+ src/CMakeLists.txt               | 10 ++------
+ src/dynarmic/CMakeLists.txt      |  3 ---
+ 6 files changed, 61 insertions(+), 26 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 29c2b38..cbb6b52 100644
+index 5cd51e0..0080189 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -410,12 +410,13 @@ set(ENABLE_TESTING OFF)
- # boost
- set(BOOST_INCLUDE_LIBRARIES algorithm icl pool container heap asio headers process filesystem crc variant)
+@@ -416,12 +416,13 @@ set(ENABLE_TESTING OFF)
+ set(BOOST_INCLUDE_LIBRARIES algorithm icl pool container heap asio headers
+     process filesystem crc variant pfr)
  
 -AddJsonPackage(boost)
-+find_package(Boost 1.57.0 CONFIG REQUIRED OPTIONAL_COMPONENTS headers context system fiber filesystem)
++find_package(Boost 1.87.0 CONFIG REQUIRED OPTIONAL_COMPONENTS headers context system fiber filesystem)
  
  # really annoying thing where boost::headers doesn't work with cpm
  # TODO(crueter) investigate
@@ -30,15 +31,11 @@ index 29c2b38..cbb6b52 100644
  if (Boost_ADDED)
      add_compile_definitions(YUZU_BOOST_v1)
      if (NOT MSVC OR CXX_CLANG)
-@@ -431,19 +432,20 @@ if (Boost_ADDED)
+@@ -437,16 +438,17 @@ if (Boost_ADDED)
              $<$<COMPILE_LANGUAGE:C,CXX>:-Wno-implicit-fallthrough>)
      endif()
  endif()
 +endif()
- 
- # fmt
--AddJsonPackage(fmt)
-+find_package(fmt 8)
  
  # lz4
 -AddJsonPackage(lz4)
@@ -54,12 +51,7 @@ index 29c2b38..cbb6b52 100644
  
  if (zstd_ADDED)
      add_library(zstd::zstd ALIAS libzstd_static)
-@@ -451,18 +453,18 @@ if (zstd_ADDED)
- endif()
- 
- # nlohmann
--AddJsonPackage(nlohmann)
-+find_package(nlohmann_json 3.8 REQUIRED)
+@@ -455,14 +457,14 @@ endif()
  
  if (NOT YUZU_STATIC_ROOM)
      # zlib
@@ -85,7 +77,7 @@ index 29c2b38..cbb6b52 100644
  endif()
  
  # List of all FFmpeg components required
-@@ -542,17 +544,27 @@ find_package(enet)
+@@ -543,12 +545,16 @@ find_package(enet)
  
  if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
      find_package(xbyak)
@@ -102,18 +94,7 @@ index 29c2b38..cbb6b52 100644
      find_package(SimpleIni)
      find_package(sirit)
      find_package(gamemode)
-     find_package(frozen)
- 
-+    if(fmt_FOUND)
-+        message(STATUS "Using the system fmt")
-+    else()
-+        add_subdirectory("externals/fmt" EXCLUDE_FROM_ALL)
-+    endif()
-+
-     if (ARCHITECTURE_riscv64)
-         find_package(biscuit)
-     endif()
-@@ -645,7 +657,12 @@ if (ENABLE_QT)
+@@ -646,7 +652,12 @@ if (ENABLE_QT)
      ## Qt Externals ##
  
      # QuaZip
@@ -128,10 +109,10 @@ index 29c2b38..cbb6b52 100644
  
  if (NOT YUZU_STATIC_ROOM AND NOT (YUZU_USE_BUNDLED_FFMPEG OR YUZU_USE_EXTERNAL_FFMPEG))
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index cb1dece..881436e 100644
+index 83e7d48..6987d60 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
-@@ -25,6 +25,7 @@ set(BUILD_SHARED_LIBS OFF)
+@@ -29,6 +29,7 @@ set(BUILD_SHARED_LIBS OFF)
  set_directory_properties(PROPERTIES EXCLUDE_FROM_ALL ON)
  
  # Xbyak
@@ -139,7 +120,7 @@ index cb1dece..881436e 100644
  if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
      AddJsonPackage(xbyak)
  endif()
-@@ -39,6 +40,7 @@ endif()
+@@ -43,6 +44,7 @@ endif()
  if (NOT TARGET enet::enet)
      add_library(enet::enet ALIAS enet)
  endif()
@@ -147,17 +128,18 @@ index cb1dece..881436e 100644
  
  # stb
  add_library(stb stb/stb_dxt.cpp)
-@@ -67,7 +69,8 @@ endif()
- if (IOS)
-     set(HTTPLIB_USE_BROTLI_IF_AVAILABLE OFF)
+@@ -52,9 +54,8 @@ if (NOT TARGET stb::headers)
+     add_library(stb::headers ALIAS stb)
  endif()
--AddJsonPackage(httplib)
-+set(HTTPLIB_REQUIRE_OPENSSL ON)
-+add_subdirectory(cpp-httplib)
  
- if (YUZU_STATIC_ROOM)
-     return()
-@@ -88,11 +91,13 @@ if (ARCHITECTURE_loongarch64)
+-AddJsonPackage(NAME zbic DOWNLOAD_ONLY)
+ add_library(zbic INTERFACE)
+-target_include_directories(zbic INTERFACE ${zbic_SOURCE_DIR}/src)
++target_include_directories(zbic INTERFACE zbic/src)
+ add_library(zbic::zbic ALIAS zbic)
+ 
+ # ItaniumDemangle (Windows only)
+@@ -86,11 +87,13 @@ if (ARCHITECTURE_loongarch64)
      AddJsonPackage(lagoon)
  endif()
  
@@ -171,7 +153,7 @@ index cb1dece..881436e 100644
  
  # DiscordRPC
  if (USE_DISCORD_PRESENCE)
-@@ -109,8 +114,9 @@ if (USE_DISCORD_PRESENCE)
+@@ -107,8 +110,9 @@ if (USE_DISCORD_PRESENCE)
  endif()
  
  # SimpleIni
@@ -182,7 +164,7 @@ index cb1dece..881436e 100644
  # Most linux distros don't package cubeb, so enable regardless of cpm settings
  if(ENABLE_CUBEB)
      AddJsonPackage(cubeb)
-@@ -140,6 +146,7 @@ if(ENABLE_CUBEB)
+@@ -138,6 +142,7 @@ if(ENABLE_CUBEB)
          add_library(cubeb::cubeb ALIAS cubeb)
      endif()
  endif()
@@ -190,7 +172,7 @@ index cb1dece..881436e 100644
  
  if (NOT YUZU_USE_BUNDLED_SDL3)
      if (NOT WIN32)
-@@ -162,7 +169,7 @@ if (NOT YUZU_USE_BUNDLED_SDL3)
+@@ -160,7 +165,7 @@ if (NOT YUZU_USE_BUNDLED_SDL3)
          set(SDL_FILE ON)
      endif()
  
@@ -199,7 +181,7 @@ index cb1dece..881436e 100644
  else()
      message(STATUS "Using bundled SDL3")
      AddJsonPackage(sdl3-ci)
-@@ -186,9 +193,10 @@ if (NOT TARGET SDL3::SDL3)
+@@ -184,9 +189,10 @@ if (NOT TARGET SDL3::SDL3)
  endif()
  
  # SPIRV Headers
@@ -211,7 +193,7 @@ index cb1dece..881436e 100644
  if (YUZU_USE_BUNDLED_SIRIT)
      AddJsonPackage(sirit-ci)
  else()
-@@ -199,6 +207,7 @@ else()
+@@ -197,6 +203,7 @@ else()
          )
      endif()
  endif()
@@ -219,7 +201,7 @@ index cb1dece..881436e 100644
  
  # reshadefx
  if (ENABLE_RESHADE)
-@@ -246,7 +255,7 @@ endif()
+@@ -244,7 +251,7 @@ endif()
  
  # Catch2
  if (YUZU_TESTS OR DYNARMIC_TESTS)
@@ -228,7 +210,7 @@ index cb1dece..881436e 100644
  endif()
  
  # getopt
-@@ -258,6 +267,7 @@ endif()
+@@ -256,6 +263,7 @@ endif()
  add_subdirectory(glad)
  
  # libusb
@@ -236,7 +218,7 @@ index cb1dece..881436e 100644
  if (ENABLE_LIBUSB)
      add_subdirectory(libusb)
  endif()
-@@ -276,10 +286,14 @@ if (VulkanMemoryAllocator_ADDED)
+@@ -274,10 +282,28 @@ if (VulkanMemoryAllocator_ADDED)
          )
      endif()
  endif()
@@ -249,10 +231,24 @@ index cb1dece..881436e 100644
 +    set(CPP_JWT_BUILD_TESTS OFF)
 +    set(CPP_JWT_USE_VENDORED_NLOHMANN_JSON OFF)
 +    add_subdirectory(cpp-jwt)
++endif()
++
++find_package(jacinth QUIET)
++if(jacinth_FOUND)
++    message(STATUS "Using the system jacinth")
++else()
++    add_subdirectory("externals/jacinth" EXCLUDE_FROM_ALL)
++endif()
++
++find_package(hydrocarbon QUIET)
++if(hydrocarbon_FOUND)
++    message(STATUS "Using the system hydrocarbon")
++else()
++    add_subdirectory("externals/hydrocarbon" EXCLUDE_FROM_ALL)
  endif()
  
  # FFMpeg
-@@ -314,6 +328,7 @@ if (ANDROID AND ARCHITECTURE_arm64)
+@@ -312,6 +338,7 @@ if (ANDROID AND ARCHITECTURE_arm64)
      AddJsonPackage(libadrenotools)
  endif()
  
@@ -260,7 +256,7 @@ index cb1dece..881436e 100644
  AddJsonPackage(gamemode)
  
  if (gamemode_ADDED)
-@@ -321,6 +336,7 @@ if (gamemode_ADDED)
+@@ -319,6 +346,7 @@ if (gamemode_ADDED)
      target_include_directories(gamemode INTERFACE ${gamemode_SOURCE_DIR}/lib)
      add_library(gamemode::headers ALIAS gamemode)
  endif()
@@ -301,19 +297,45 @@ index a82bf0b..5f4a39c 100644
      message(STATUS "Downloading time zone data...")
      AddJsonPackage(tzdb)
  
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 305c744..930db2b 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -259,12 +259,6 @@ endif()
+ # These externals need their compiler flags to match the rest of the world
+ # C++20 modules are sad sometimes
+ 
+-# Jacinth (json)
+-AddJsonPackage(jacinth)
+-
+-# Hydrocarbon (http)
+-AddJsonPackage(hydrocarbon)
+-
+ # Disable rtti, enable fwrapv, link POSIX threads
+ macro(fix_modules target type)
+     if (MSVC)
+@@ -286,14 +280,14 @@ macro(fix_modules target type)
+ endmacro()
+ 
+ # enable POSIX threads
+-if (jacinth_ADDED)
++if (NOT jacinth_FOUND)
+     fix_modules(jacinth PRIVATE)
+ else()
+     fix_modules(jacinth::jacinth INTERFACE)
+ endif()
+ 
+ # ditto, hydrocarbon
+-if (hydrocarbon_ADDED)
++if (NOT hydrocarbon_FOUND)
+     fix_modules(hydrocarbon PRIVATE)
+ else()
+     fix_modules(hydro::carbon INTERFACE)
 diff --git a/src/dynarmic/CMakeLists.txt b/src/dynarmic/CMakeLists.txt
-index 0837a50..2138b54 100644
+index 537aeb3..1e3450a 100644
 --- a/src/dynarmic/CMakeLists.txt
 +++ b/src/dynarmic/CMakeLists.txt
-@@ -101,7 +101,6 @@ endif()
- if (NOT Boost_FOUND)
-     find_package(Boost 1.57 REQUIRED)
- endif()
--find_package(fmt 8 CONFIG)
- 
- if (ARCHITECTURE_arm64)
-     find_package(oaknut 2.0.1 CONFIG)
-@@ -112,9 +111,6 @@ endif()
+@@ -112,9 +112,6 @@ endif()
  if (ARCHITECTURE_loongarch64)
      find_package(lagoon REQUIRED)
  endif()
@@ -324,5 +346,5 @@ index 0837a50..2138b54 100644
  if (DYNARMIC_USE_LLVM)
      find_package(LLVM REQUIRED)
 -- 
-2.56.0
+2.56.1
 

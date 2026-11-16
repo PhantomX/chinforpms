@@ -13,17 +13,15 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 5df599128d6828fa0e42968909da848c255d22b1
+%global commit 3cc996dfb70cedd4f02bbd877616d39131876c7d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20261103
+%global date 20261113
 %bcond snapshot 1
 
 # Enable system ffmpeg
 %bcond ffmpeg 1
 # Use stable ffmpeg
 %bcond ffmpeg_st 1
-# Enable system fmt
-%bcond fmt 1
 # Disable Qt build
 %bcond qt 1
 # Build tests
@@ -45,9 +43,17 @@
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 xbyak
 
-%global commit16 44215e23e92c473a3553d24ae634aed6eefc7dd0
+%global commit14 f41ad384cbdb3b33bc56725093aadc6e587cfcdf
+%global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
+%global srcname14 jacinth
+
+%global commit15 11b08f2712264bbed731545085cbd9702096ceb7
+%global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
+%global srcname15 zbic
+
+%global commit16 39129069ab1cbd00652dc6647784360c35e65dc1
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
-%global srcname16 cpp-httplib
+%global srcname16 hydrocarbon
 
 %global commit17 7f24eb4c32145cf7520f5ebb45772e9b28217cff
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
@@ -74,7 +80,6 @@
 %global srcname23 boost-headers
 
 %global ffmpeg_ver 7.1.1
-%global fmt_ver 12.0.0
 %global glad_ver 0.1.29
 %global nxtzdb_ver 250725
 %global stbdxt_ver 1.12
@@ -96,7 +101,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           eden
-Version:        0.2.0.432
+Version:        0.2.0.457
 Epoch:          1
 Release:        1%{?dist}
 Summary:        A NX Emulator
@@ -124,10 +129,10 @@ Source12:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname12}/archive
 %if %{without xbyak}
 Source13:       https://github.com/herumi/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
 %endif
-%dnl Source14:       %{gh_url}/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
-%dnl Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
+Source14:       https://github.com/crueter/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
+Source15:       https://github.com/kinnay/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 %if %{with webservice}
-Source16:       https://github.com/yhirose/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
+Source16:       https://github.com/crueter/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
 Source17:       https://github.com/arun11299/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
 %endif
 Source19:       https://github.com/brofield/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
@@ -140,15 +145,11 @@ Source21:       https://github.com/FFmpeg/%{srcname21}/archive/%{commit21}/%{src
 Source21:       https://ffmpeg.org/releases/ffmpeg-%{ffmpeg_ver}.tar.xz
 %endif
 %endif
-%if %{without fmt}
-Source22:       https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.tar.gz
-%endif
 Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/%{srcname23}-%{shortcommit23}.tar.gz
 %dnl Source24:       https://github.com/serge-sans-paille/%{srcname24}/archive/%{commit24}/%{srcname24}-%{shortcommit24}.tar.gz
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Add-smaller-game-icon-sizes.patch
-Patch500:       0001-cpp-httplib-add-new-Fedora-certificate-path.patch
 
 ExclusiveArch:  x86_64
 
@@ -165,7 +166,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  llvm-devel >= 19.1.3
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
-BuildRequires:  boost-devel >= 1.83.0
+BuildRequires:  boost-devel >= 1.87.0
 %if %{with tests}
 BuildRequires:  pkgconfig(catch2) >= 2.13.7
 %endif
@@ -176,11 +177,6 @@ BuildRequires:  pkgconfig(libbrotlidec)
 BuildRequires:  pkgconfig(libbrotlienc)
 BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
-%if %{with fmt}
-BuildRequires:  cmake(fmt) >= 11
-%else
-Provides:       bundled(fmt) = %{fmt_ver}
-%endif
 %if %{with ffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavfilter)
@@ -252,9 +248,10 @@ Requires:       vulkan-loader%{?_isa}
 Provides:       bundled(dynarmic) = 0~git%{?shortcommit}
 %if %{with webservice}
 Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit17}
-Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit16}
+Provides:       bundled(hydrocarbon) = 0~git%{?shortcommit16}
 %endif
 Provides:       bundled(glad) = %{glad_ver}
+Provides:       bundled(jacinth) = 0~git%{?shortcommit14}
 %ifarch aarch64
 Provides:       bundled(oaknut) = 0~git9d09110
 %endif
@@ -283,11 +280,6 @@ echo %{sver}
 %autosetup -n %{name} -N -p1
 %autopatch -M 499 -p1
 
-sed \
-  -e '/-pedantic-errors/d' \
-  -e '/-mtune=core2/d' \
-  -i src/dynarmic/CMakeLists.txt
-
 pushd externals
 rm -rf \
   ffmpeg/ffmpeg/* gamemode getopt libusb
@@ -310,11 +302,14 @@ mkdir -p xbyak
 tar -xf %{S:13} -C xbyak --strip-components 1
 sed -e '/find_package/s|xbyak|\0_DISABLED|g' -i ../CMakeLists.txt
 %endif
+mkdir -p jacinth
+tar -xf %{S:14} -C jacinth --strip-components 1
+rm -rf jacinth/externals/pfr
+mkdir zbic
+tar -xf %{S:15} -C zbic --strip-components 1
 %if %{with webservice}
-mkdir -p cpp-httplib
-tar -xf %{S:16} -C cpp-httplib --strip-components 1
-sed -e 's|zstd::libzstd|zstd::zstd|g' -i cpp-httplib/CMakeLists.txt
-%patch -P 500 -p1 -d cpp-httplib
+mkdir -p hydrocarbon
+tar -xf %{S:16} -C hydrocarbon --strip-components 1
 mkdir -p cpp-jwt
 tar -xf %{S:17} -C cpp-jwt --strip-components 1
 %{__scm_apply_patch -p1 -q} -d cpp-jwt -i ../../.patch/cpp-jwt/0001-fix-missing-decl.patch
@@ -332,14 +327,6 @@ sed \
   -e 's|--disable-avdevice|\0 --arch=%{_target_cpu}|' \
   -i ffmpeg/CMakeLists.txt
 %endif
-%if %{without fmt}
-mkdir -p fmt
-tar -xf %{S:22} -C fmt --strip-components 1
-sed \
-  -e '/^find_package(fmt/s|REQUIRED||' \
-  -e 's|^find_package(fmt|\0_DISABLED|' \
-  -i ../CMakeLists.txt
-%endif
 mkdir -p boost-headers
 tar -xf %{S:23} -C boost-headers --strip-components 1
 
@@ -350,12 +337,11 @@ find . -type f -name '*.sh' -exec chmod +x {} ';'
 
 pushd externals
 %if %{with webservice}
-%if %{without httplib}
-cp -p cpp-httplib/LICENSE LICENSE.cpp-httplib
-%endif
+cp -p hydrocarbon/COPYING.md LICENSE.hydrocarbon.md
 cp -p cpp-jwt/LICENSE LICENSE.cpp-jwt
 %endif
 cp -p FidelityFX-FSR/license.txt LICENSE.FidelityFX-FSR
+cp -p jacinth/LICENSE LICENSE.jacinth
 cp -p nx_tzdb/tzdb_to_nx/LICENSE LICENSE.tzdb_to_nx
 cp -p reshade/LICENSE.md LICENSE.reshade.md
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
@@ -365,6 +351,7 @@ cp -p VulkanMemoryAllocator/LICENSE.txt LICENSE.vma
 %if %{without xbyak}
 cp xbyak/COPYRIGHT LICENSE.xbyak
 %endif
+cp -p zbic/LICENSE LICENSE.zbic
 %if %{without ffmpeg}
 cp -p ffmpeg/ffmpeg/COPYING.GPLv3 COPYING.ffmpeg
 %endif
@@ -436,13 +423,13 @@ echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' 
   -DYUZU_USE_BUNDLED_OPENSSL:BOOL=OFF \
   -DYUZU_USE_BUNDLED_OPUS:BOOL=OFF \
   -DYUZU_USE_QT_WEB_ENGINE:BOOL=ON \
-  %{!?with_tests:-DYUZU_TESTS:BOOL=OFF} \
+  %{!?with_tests:-DBUILD_TESTING:BOOL=OFF} \
   %{!?with_webservice:-DENABLE_WEB_SERVICE:BOOL=OFF} \
   -DENABLE_WIFI_SCAN:BOOL=OFF \
   -DENABLE_WERROR:BOOL=OFF \
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
-  -DDYNARMIC_TESTS:BOOL=OFF \
+  -DJACINTH_USE_SYSTEM_PFR:BOOL=ON \
 %{nil}
 
 %cmake_build

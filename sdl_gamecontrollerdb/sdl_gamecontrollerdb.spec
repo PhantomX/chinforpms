@@ -1,6 +1,6 @@
-%global commit 22a98f6339abf4b6ca6cb061443a70e4f7ab252d
+%global commit c0f11d40b91f57853ce9714c703e119d8243f91c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20261027
+%global date 20261109
 %bcond snapshot 1
 
 BuildArch:      noarch
@@ -12,7 +12,7 @@ BuildArch:      noarch
 %global pkgname SDL_GameControllerDB
 
 Name:           sdl_gamecontrollerdb
-Version:        1696
+Version:        1699
 Release:        1%{?dist}
 Summary:        A database of game controller mappings
 
@@ -25,6 +25,7 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
 Patch0:         0001-Add-Xbox-360-Controller-for-Windows-GUID.patch
+Patch1:         0001-Add-8BitDo-Ultimate-2C-GUID.patch
 
 BuildRequires:  python3-devel
 

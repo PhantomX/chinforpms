@@ -51,24 +51,25 @@
 %global winevulkan 1.4.363
 %global opencl    1
 
-%global winecapstone 5.0.3
+%global winecapstone 5.0.9
 %global wineFAudio 26.10
 %global winefluidsynth 2.4.0
 %global winegsm 1.0.19
 %global winejpeg 10
-%global winelcms2 2.19.1
+%global winejxr 1.4.4
+%global winelcms2 2.20
 %global wineldap 2.5.18
-%global winempg123 1.33.0
-%global winepng 1.6.58
+%global winempg123 1.33.7
+%global winepng 1.6.59
 %global wineopenldap 2.5.17
 %global winesymcrypt 103.11.0
 %global winetiff 4.7.1
 %global winejxrlib 1.1
-%global winesqlite3 3.53.2
-%global winevkd3d 2.0
+%global winesqlite3 3.54.1
+%global winevkd3d 2.1
 %global winexml2 2.12.8
 %global winexslt 1.1.45
-%global winezlib 1.3.2
+%global winezlib 1.4
 %global winezydis 4.1.0
 
 %global _default_patch_fuzz 2
@@ -77,7 +78,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.21
+%global wine_stagingver 11.22
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -125,7 +126,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.21
+Version:        11.22
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -199,7 +200,6 @@ Patch700:        %{whq_murl}/-/commit/bd89ab3040e30c11b34a95072d88f635ade03bdc.p
 Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.patch#/%{name}-whq-revert-240556e.patch
 Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.patch#/%{name}-whq-revert-2941e58.patch
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
-Patch705:        %{whq_murl}/-/merge_requests/11701.patch#/%{name}-whq-mr11701.patch
 Patch707:        %{name}-mr9787.patch
 
 # wine staging patches for wine-staging
@@ -211,7 +211,6 @@ Patch1001:       %{tkg_url}/misc/CSMT-toggle/CSMT-toggle.patch#/%{name}-tkg-CSMT
 
 Patch1020:       %{tkg_url}/proton/LAA/LAA-unix-staging-wow64.patch#/%{name}-tkg-LAA-unix-staging-wow64.patch
 Patch1021:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging-nofsync.patch#/%{name}-tkg-proton-tkg-staging-nofsync.patch
-Patch1022:       %{tkg_url}/proton-tkg-specific/proton-tkg/proton-tkg-additions.patch#/%{name}-tkg-proton-tkg-additions.patch
 Patch1023:       %{tkg_url}/proton/proton-win10-default/proton-win10-default.patch#/%{name}-tkg-proton-win10-default.patch
 Patch1024:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_time_out2.mypatch#/%{name}-tkg-remove_hooks_that_time_out2.patch
 Patch1025:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
@@ -232,6 +231,7 @@ Patch1302:       0001-PSO2-fix.patch
 Patch1303:       0001-mfplat-custom-fixes-from-proton.patch
 Patch1304:       0001-win32u-add-env-switch-to-disable-wm-decorations.patch
 Patch1305:       0001-Add-960x720-size-to-supported-virtual-modes.patch
+Patch1306:       0001-HACK-winex11.drv-Let-the-WM-focus-our-windows-by-def.patch
 
 Patch1401:       %{fgw_url}/wine-message-progress-rendering.patch#/wine-fgw-wine-message-progress-rendering.patch
 Patch1402:       %{fgw_url}/wine-pipe-file-position.patch#/wine-fgw-wine-pipe-file-position.patch
@@ -239,7 +239,6 @@ Patch1403:       %{fgw_url}/wine-msvcrt-narrow-open-createfilea.patch#/wine-fgw-
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
-Patch5001:      0001-staging-mr11701-fixup.patch
 
 # END of staging patches
 
@@ -455,6 +454,7 @@ Requires:       vulkan-loader
 Provides:       bundled(fluidsynth) = %{winefluidsynth}
 Provides:       bundled(gsm) = %{winegsm}
 Provides:       bundled(capstone) = %{winecapstone}
+Provides:       bundled(jxrlib) = %{winejxr}
 Provides:       bundled(libFAudio) = %{wineFAudio}
 Provides:       bundled(libjpeg) = %{winejpeg}
 Provides:       bundled(lcms2) = %{winelcms2}
@@ -791,7 +791,6 @@ This package adds the opencl driver for wine.
 
 %patch -P 703 -p1 -R
 %patch -P 704 -p1
-%patch -P 705 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -802,7 +801,6 @@ tar -xf %{SOURCE900} --strip-components=1
 %patch -P 1001 -p1
 
 %patch -P 5000 -p1
-%patch -P 5001 -p1
 
 ./staging/patchinstall.py --no-autoconf --destdir="$(pwd)" --all %{?wine_staging_opts}
 
@@ -811,7 +809,6 @@ tar -xf %{SOURCE900} --strip-components=1
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
 %patch -P 1021 -p1
-%patch -P 1022 -p1
 
 %patch -P 1023 -p1
 %patch -P 1024 -p1
@@ -831,8 +828,9 @@ tar -xf %{SOURCE900} --strip-components=1
 %patch -P 1303 -p1
 %patch -P 1304 -p1
 %patch -P 1305 -p1
+%patch -P 1306 -p1
 %patch -P 1401 -p1
-%patch -P 1402 -p1
+%dnl %patch -P 1402 -p1
 %patch -P 1403 -p1
 
 sed \
@@ -1414,6 +1412,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/browseui.dll
 %{_libdir}/wine/%{winepedirs}/bthprops.cpl
 %{_libdir}/wine/%{winepedirs}/cabinet.dll
+%{_libdir}/wine/%{winepedirs}/capabilityaccessmanagerclient.dll
 %{_libdir}/wine/%{winepedirs}/cards.dll
 %{_libdir}/wine/%{winepedirs}/cdosys.dll
 %{_libdir}/wine/%{winepedirs}/cfgmgr32.dll
@@ -2481,6 +2480,9 @@ fi
 
 
 %changelog
+* Sun Nov 15 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.22-100
+- 11.22
+
 * Sat Oct 31 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.21-100
 - 11.21
 
