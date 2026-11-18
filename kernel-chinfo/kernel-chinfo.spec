@@ -203,7 +203,7 @@ Summary: The Linux kernel
 %global released_kernel 1
 
 # define buildid .local
-%define specrpmversion 7.3.4
+%define specrpmversion 7.3.5
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1275,6 +1275,10 @@ Patch1012: %{opensuse_url}/KVM-x86-tdx-Do-not-print-error-message-on-non-presen.
 Patch1013: %{opensuse_url}/drm-qxl-fix-use-after-free-and-NULL-pointer-deref.patch#/openSUSE-drm-qxl-fix-use-after-free-and-NULL-pointer-deref.patch
 Patch1014: %{opensuse_url}/ring-buffer-Do-not-check-si_mem_available-during-SYSTEM_BOOTING.patch#/openSUSE-ring-buffer-Do-not-check-si_mem_available-during-SYSTEM_BOOTING.patch
 
+Patch1500: %{kernel_url}/?id=4e5eb180d37cb222ed3c9b6772c6044e16c2a1c3#/kernel-stable-revert-4e5eb18.patch
+Patch1501: %{kernel_url}/?id=590c8856baadbc45c2e797b05f81152419f40cad#/kernel-stable-revert-590c885.patch
+Patch1502: %{kernel_url}/?id=700b16f5150ca86cc3f0e533738d1c38f19d5d2e#/kernel-stable-revert-700b16f.patch
+
 %global patchwork_url https://patchwork.kernel.org
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
@@ -1284,6 +1288,7 @@ Patch2002: %{zen_url}/commit/53cd61cb0e1bf907a8bb296d8dcbf4ecefad28be.patch#/zen
 Patch2003: %{zen_url}/commit/74ea29b37e6d6d19515412906b1289c55e6cd71b.patch#/zen-v%{patchversion}-sauce-74ea29b.patch
 Patch2004: %{zen_url}/commit/20727b0f3df8d832053c5813ee342b04d6b9d087.patch#/zen-v%{patchversion}-sauce-20727b0.patch
 Patch2005: %{zen_url}/commit/d9f25aa599055aca5573b86eaadd153551927fc5.patch#/zen-v%{patchversion}-sauce-d9f25aa.patch
+Patch2006: %{zen_url}/commit/410c32b57716d019dbb1b6fa32c5aafd34cc358a.patch#/zen-v%{patchversion}-fixes-410c32b.patch
 # zram-zcomp
 Patch2010: %{zen_url}/commit/200f8f1d7d74cfd4059de48cc4433693b61ffe20.patch#/zen-v%{patchversion}-zram-200f8f1.patch
 Patch2011: %{zen_url}/commit/70af1e08c9407a76b29a6ac1302e0a9665fb9e0b.patch#/zen-v%{patchversion}-zram-70af1e0.patch
@@ -1337,6 +1342,10 @@ Patch2067: %{zen_url}/commit/a6d8cd6cf9502323d8f4f15df1505f369af69183.patch#/zen
 Patch2068: %{zen_url}/commit/0bb79c27b3df116c04124af95548021cfae9dc89.patch#/zen-v%{patchversion}-mglru-0bb79c2.patch
 Patch2069: %{zen_url}/commit/394cd0e5b16c88ba81d15f53e368a9237d88cb68.patch#/zen-v%{patchversion}-mglru-394cd0e.patch
 Patch2070: %{zen_url}/commit/5bcfc49e533b1f416d1ca87f1de9093990df777b.patch#/zen-v%{patchversion}-mglru-5bcfc49.patch
+Patch2071: %{zen_url}/commit/1c52d132ec8cf1221060daaddca5f816dbae3f2f.patch#/zen-v%{patchversion}-mglru-1c52d13.patch
+Patch2072: %{zen_url}/commit/a02aad84ac1ad67c80476ab6c1f8127f250923a8.patch#/zen-v%{patchversion}-fixes-a02aad8.patch
+Patch2073: %{zen_url}/commit/19365a2fb4734680ac04d09bc0a7be0b5469adf7.patch#/zen-v%{patchversion}-fixes-19365a2.patch
+Patch2074: 0001-mm-vmscan-avoid-false-positive-Wuninitialized-warnin.patch
 
 # Add native cpu gcc optimization support
 Patch6000: 0001-kbuild-support-x86_64-ISA-levels.patch
@@ -2370,7 +2379,11 @@ ApplyPatch %{PATCH2025}
 ApplyPatch %{PATCH2030}
 ApplyPatch %{PATCH2031}
 ApplyPatch %{PATCH2032}
+ApplyPatch %{PATCH2006}
 
+ApplyPatch %{PATCH1502} -R
+ApplyPatch %{PATCH1501} -R
+ApplyPatch %{PATCH1500} -R
 ApplyPatch %{PATCH2040}
 ApplyPatch %{PATCH2041}
 ApplyPatch %{PATCH2042}
@@ -2402,6 +2415,10 @@ ApplyPatch %{PATCH2067}
 ApplyPatch %{PATCH2068}
 ApplyPatch %{PATCH2069}
 ApplyPatch %{PATCH2070}
+ApplyPatch %{PATCH2071}
+ApplyPatch %{PATCH2072}
+ApplyPatch %{PATCH2073}
+ApplyPatch %{PATCH2074}
 
 ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}
@@ -5174,6 +5191,9 @@ fi\
 #
 #
 %changelog
+* Tue Nov 17 2026 Phantom X <megaphantomx at hotmail dot com> - 7.3.5-500.chinfo
+- 7.3.5
+
 * Tue Nov 10 2026 Phantom X <megaphantomx at hotmail dot com> - 7.3.4-500.chinfo
 - 7.3.4
 
