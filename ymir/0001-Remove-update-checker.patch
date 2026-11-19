@@ -1,4 +1,4 @@
-From 9104a615779ac5a0719a79fea053351576ab333e Mon Sep 17 00:00:00 2001
+From fc43c7e9ec44fded1bc1ce1c1a582a7d7cae1cfc Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 11 Oct 2025 17:38:43 -0300
 Subject: [PATCH] Remove update checker
@@ -19,7 +19,7 @@ Subject: [PATCH] Remove update checker
  12 files changed, 7 insertions(+), 75 deletions(-)
 
 diff --git a/apps/ymir-sdl3/CMakeLists.txt b/apps/ymir-sdl3/CMakeLists.txt
-index e5d6b66..ff5fb07 100644
+index 34e6a38..26f27b5 100644
 --- a/apps/ymir-sdl3/CMakeLists.txt
 +++ b/apps/ymir-sdl3/CMakeLists.txt
 @@ -22,8 +22,6 @@ add_executable(ymir-sdl3
@@ -51,7 +51,7 @@ index e5d6b66..ff5fb07 100644
  
      src/app/ui/windows/debug/cdblock_cmd_trace_window.cpp
      src/app/ui/windows/debug/cdblock_cmd_trace_window.hpp
-@@ -528,8 +520,6 @@ endif()
+@@ -534,8 +526,6 @@ endif()
  find_package(cereal CONFIG REQUIRED)
  find_package(cxxopts CONFIG REQUIRED)
  find_package(date CONFIG REQUIRED)
@@ -60,7 +60,7 @@ index e5d6b66..ff5fb07 100644
  find_package(rtmidi CONFIG)
  if(NOT rtmidi_FOUND)
      set(RTMIDI_BUILD_STATIC_LIBS ON)
-@@ -560,7 +550,6 @@ target_link_libraries(ymir-sdl3 PRIVATE
+@@ -566,7 +556,6 @@ target_link_libraries(ymir-sdl3 PRIVATE
      lz4::lz4
      discord-rpc
      RtMidi::rtmidi
@@ -69,7 +69,7 @@ index e5d6b66..ff5fb07 100644
      dr_libs::dr_libs
  )
 diff --git a/apps/ymir-sdl3/src/app/app.cpp b/apps/ymir-sdl3/src/app/app.cpp
-index c219a86..8235304 100644
+index 476d8c8..682537c 100644
 --- a/apps/ymir-sdl3/src/app/app.cpp
 +++ b/apps/ymir-sdl3/src/app/app.cpp
 @@ -185,7 +185,6 @@ App::App()
@@ -96,7 +96,7 @@ index c219a86..8235304 100644
  
      ScopeGuard sgStopDiscordRPC{[&] { m_discordRPCService.Stop(); }};
  
-@@ -2003,8 +2004,6 @@ void App::RunEmulator() {
+@@ -2016,8 +2017,6 @@ void App::RunEmulator() {
                  break;
              }
  
@@ -105,7 +105,7 @@ index c219a86..8235304 100644
              case EvtType::StateLoaded:
                  m_context.DisplayMessage(fmt::format("State {} loaded", std::get<uint32>(evt.value) + 1));
                  break;
-@@ -2773,9 +2772,6 @@ void App::RunEmulator() {
+@@ -2786,9 +2785,6 @@ void App::RunEmulator() {
                      if (ImGui::MenuItem("Open welcome window", nullptr)) {
                          m_windowManagerService.OpenWelcomeModal(false);
                      }
@@ -225,10 +225,10 @@ index b452fb3..1aef275 100644
      bool m_openGenericModal = false;
      bool m_closeGenericModal = false;
 diff --git a/apps/ymir-sdl3/src/app/settings.cpp b/apps/ymir-sdl3/src/app/settings.cpp
-index 534f54e..9d41179 100644
+index a3d89d7..e130f88 100644
 --- a/apps/ymir-sdl3/src/app/settings.cpp
 +++ b/apps/ymir-sdl3/src/app/settings.cpp
-@@ -1034,8 +1034,6 @@ void Settings::ResetToDefaults() {
+@@ -1032,8 +1032,6 @@ void Settings::ResetToDefaults() {
      general.unpauseOnDiscLoad = true;
      general.startPaused = false;
  
@@ -237,7 +237,7 @@ index 534f54e..9d41179 100644
      general.enableDiscordPresence = false;
  
      gui.overrideUIScale = false;
-@@ -1239,8 +1237,6 @@ SettingsLoadResult Settings::Load(const std::filesystem::path &path) {
+@@ -1237,8 +1235,6 @@ SettingsLoadResult Settings::Load(const std::filesystem::path &path) {
          Parse(tblGeneral, "PauseWhenUnfocused", general.pauseWhenUnfocused);
          Parse(tblGeneral, "UnpauseOnDiscLoadd", general.unpauseOnDiscLoad);
          Parse(tblGeneral, "StartPaused", general.startPaused);
@@ -246,7 +246,7 @@ index 534f54e..9d41179 100644
          Parse(tblGeneral, "EnableDiscordPresence", general.enableDiscordPresence);
  
          general.screenshotScale = std::clamp(general.screenshotScale, 1, 4);
-@@ -1888,8 +1884,6 @@ SettingsSaveResult Settings::Save() {
+@@ -1886,8 +1882,6 @@ SettingsSaveResult Settings::Save() {
              {"PauseWhenUnfocused", general.pauseWhenUnfocused},
              {"UnpauseOnDiscLoad", general.unpauseOnDiscLoad},
              {"StartPaused", general.startPaused},
@@ -330,7 +330,7 @@ index 547a480..2f8eb0f 100644
  
      ImGui::PushFont(imguiData->fonts.sansSerif.bold, imguiData->fontSizes.large);
 diff --git a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
-index 4a25e06..5eef196 100644
+index 8feadba..73d5e09 100644
 --- a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
 +++ b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
 @@ -22,18 +22,11 @@ CMRC_DECLARE(Ymir_sdl3_rc);
@@ -352,7 +352,7 @@ index 4a25e06..5eef196 100644
  #include <toml++/toml.hpp>
  #include <xxhash.h>
  
-@@ -44,17 +37,13 @@ CMRC_DECLARE(Ymir_sdl3_rc);
+@@ -44,7 +37,6 @@ CMRC_DECLARE(Ymir_sdl3_rc);
  #define BROTLI_VERSION "1.1.0" // Not exported
  #define CEREAL_VERSION "1.3.2" // Not exported
  #define CMRC_VERSION "2.0.0"   // Not exported
@@ -360,9 +360,10 @@ index 4a25e06..5eef196 100644
  #define CXXOPTS_VERSION _SEMVER_STR(CXXOPTS__VERSION_MAJOR, CXXOPTS__VERSION_MINOR, CXXOPTS__VERSION_PATCH)
  #define DATE_VERSION "3.0.4" // Not exported
  #define IMGUI_VERSION_FULL IMGUI_VERSION " (" _STR(IMGUI_VERSION_NUM) ")"
- #define LZMA_VERSION "25.01"    // Private dependency of libchdr
- #define LIBCHDR_VERSION "0.3.0" // Not exported
- #define MIO_VERSION "1.1.0"     // Not exported
+@@ -52,10 +44,7 @@ CMRC_DECLARE(Ymir_sdl3_rc);
+ #define LIBCHDR_VERSION "0.3.0-dev" // Not exported
+ #define MIO_VERSION "1.1.0"         // Not exported
+ // #define MZ_VERSION "3.1.1"      // Private dependency of libchdr
 -#define NLOHMANN_JSON_VERSION \
 -    _SEMVER_STR(NLOHMANN_JSON_VERSION_MAJOR, NLOHMANN_JSON_VERSION_MINOR, NLOHMANN_JSON_VERSION_PATCH)
  #define SDL_VERSION_STR _SEMVER_STR(SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_MICRO_VERSION)
@@ -370,7 +371,7 @@ index 4a25e06..5eef196 100644
  #define STB_IMAGE_VERSION "2.30"       // Not exported
  #define STB_IMAGE_WRITE_VERSION "1.16" // Not exported
  #define STB_VORBIS_VERSION "1.22"      // Not exported
-@@ -94,7 +83,6 @@ inline constexpr License licenseBSD3        {.name = "BSD-3-Clause",  .url = "ht
+@@ -95,7 +84,6 @@ inline constexpr License licenseBSD3        {.name = "BSD-3-Clause",  .url = "ht
  //inline constexpr License licenseBSL         {.name = "BSL-1.0", .      url = "https://opensource.org/license/bsl-1-0"};
  //inline constexpr License licenseISC         {.name = "ISC",           .url = "https://opensource.org/licenses/ISC"};
  inline constexpr License licenseMIT         {.name = "MIT",           .url = "https://opensource.org/licenses/MIT"};
@@ -378,7 +379,7 @@ index 4a25e06..5eef196 100644
  inline constexpr License licenseMITRtMidi   {.name = "MIT-RtMidi",    .url = "https://github.com/thestk/rtmidi/blob/master/LICENSE"};
  inline constexpr License licensePublicDomain{.name = "Public domain", .url = nullptr};
  //inline constexpr License licenseUnlicense   {.name = "Unlicense",     .url = "https://opensource.org/licenses/unlicense"};
-@@ -113,7 +101,6 @@ static const struct {
+@@ -114,7 +102,6 @@ static const struct {
      {.name = "Brotli",                        .version = BROTLI_VERSION,             .license = licenseMIT,           .repoURL = "https://github.com/google/brotli",               .licenseURL = "https://github.com/google/brotli/blob/master/LICENSE"},
      {.name = "cereal",                        .version = CEREAL_VERSION,             .license = licenseBSD3,          .repoURL = "https://github.com/USCiLab/cereal",              .licenseURL = "https://github.com/USCiLab/cereal/blob/master/LICENSE",                  .homeURL = "https://uscilab.github.io/cereal/index.html"},
      {.name = "CMakeRC",                       .version = CMRC_VERSION,               .license = licenseMIT,           .repoURL = "https://github.com/vector-of-bool/cmrc",         .licenseURL = "https://github.com/vector-of-bool/cmrc/blob/master/LICENSE.txt"},
@@ -386,7 +387,7 @@ index 4a25e06..5eef196 100644
      {.name = "cxxopts",                       .version = CXXOPTS_VERSION,            .license = licenseMIT,           .repoURL = "https://github.com/jarro2783/cxxopts",           .licenseURL = "https://github.com/jarro2783/cxxopts/blob/master/LICENSE"},
      {.name = "date",                          .version = DATE_VERSION,               .license = licenseMIT,           .repoURL = "https://github.com/HowardHinnant/date",          .licenseURL = "https://github.com/HowardHinnant/date/blob/master/LICENSE.txt"},
      {.name = "Dear ImGui",                    .version = IMGUI_VERSION_FULL,         .license = licenseMIT,           .repoURL = "https://github.com/ocornut/imgui",               .licenseURL = "https://github.com/ocornut/imgui/blob/master/LICENSE.txt"},
-@@ -125,12 +112,6 @@ static const struct {
+@@ -126,12 +113,6 @@ static const struct {
      {.name = "lzma",                          .version = LZMA_VERSION,               .license = licensePublicDomain,                                                                                                                                                       .homeURL = "https://www.7-zip.org/sdk.html",},
      {.name = "mio",                           .version = MIO_VERSION,                .license = licenseMIT,           .repoURL = "https://github.com/StrikerX3/mio",               .licenseURL = "https://github.com/StrikerX3/mio/blob/master/LICENSE"},
      {.name = "moodycamel::\nConcurrentQueue", .version = "\n" MC_CONCQUEUE_VERSION,  .license = licenseBSD2,          .repoURL = "https://github.com/cameron314/concurrentqueue",  .licenseURL = "https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md"},
@@ -400,5 +401,5 @@ index 4a25e06..5eef196 100644
      {.name = "SDL3",                          .version = SDL_VERSION_STR,            .license = licenseZlib,          .repoURL = "https://github.com/libsdl-org/SDL",              .licenseURL = "https://github.com/libsdl-org/SDL/blob/main/LICENSE.txt"},
      {.name = "SDL_GameControllerDB",                                                 .license = licenseZlib,          .repoURL = "https://github.com/mdqinc/SDL_GameControllerDB", .licenseURL = "https://github.com/mdqinc/SDL_GameControllerDB/blob/master/LICENSE"},
 -- 
-2.56.0
+2.56.1
 

@@ -1,23 +1,24 @@
-From 258ea13fd17a858d18c6c02197fcecf056f8211c Mon Sep 17 00:00:00 2001
+From 3ca279af3c3098b780206581184942e7b6b08c56 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 24 May 2025 22:15:16 -0300
 Subject: [PATCH] Use system libraries
 
 ---
  CMakeLists.txt                                |  2 ++
- apps/ymir-sdl3/CMakeLists.txt                 | 10 +++++--
+ apps/ymir-sdl3/CMakeLists.txt                 | 11 +++++--
  apps/ymir-sdl3/src/app/app.cpp                |  2 +-
  .../ymir-sdl3/src/app/services/midi_types.hpp |  2 +-
  .../ui/views/settings/audio_settings_view.cpp |  2 +-
- .../src/app/ui/windows/about_window.cpp       | 11 +------
- vendor/CMakeLists.txt                         | 29 +++++++++++++++++++
- 7 files changed, 43 insertions(+), 15 deletions(-)
+ .../src/app/ui/windows/about_window.cpp       | 10 +-----
+ vendor/CMakeLists.txt                         | 31 +++++++++++++++++--
+ vendor/imgui/CMakeLists.txt                   |  2 ++
+ 8 files changed, 46 insertions(+), 16 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index f8dba8a..deaab1c 100644
+index 5cf130b..2dfaeb8 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -146,6 +146,8 @@ else ()
+@@ -151,6 +151,8 @@ else ()
      message(STATUS "IPO / LTO not supported: ${IPO_ERROR}")
  endif ()
  
@@ -27,10 +28,10 @@ index f8dba8a..deaab1c 100644
  add_subdirectory(vendor)
  
 diff --git a/apps/ymir-sdl3/CMakeLists.txt b/apps/ymir-sdl3/CMakeLists.txt
-index 06609a7..e5d6b66 100644
+index def8dbc..34e6a38 100644
 --- a/apps/ymir-sdl3/CMakeLists.txt
 +++ b/apps/ymir-sdl3/CMakeLists.txt
-@@ -530,7 +530,13 @@ find_package(cxxopts CONFIG REQUIRED)
+@@ -536,7 +536,14 @@ find_package(cxxopts CONFIG REQUIRED)
  find_package(date CONFIG REQUIRED)
  find_package(OpenSSL CONFIG REQUIRED)
  find_package(CURL REQUIRED)
@@ -42,10 +43,11 @@ index 06609a7..e5d6b66 100644
 +    add_subdirectory(rtmidi)
 +    add_library(RtMidi::rtmidi ALIAS rtmidi)
 +endif()
- find_package(SDL3 CONFIG REQUIRED)
++find_package(SDL3 CONFIG REQUIRED)
  find_package(tomlplusplus CONFIG REQUIRED)
  
-@@ -554,7 +560,7 @@ target_link_libraries(ymir-sdl3 PRIVATE
+ target_include_directories(ymir-sdl3
+@@ -559,7 +566,7 @@ target_link_libraries(ymir-sdl3 PRIVATE
      lz4::lz4
      discord-rpc
      RtMidi::rtmidi
@@ -55,7 +57,7 @@ index 06609a7..e5d6b66 100644
      dr_libs::dr_libs
  )
 diff --git a/apps/ymir-sdl3/src/app/app.cpp b/apps/ymir-sdl3/src/app/app.cpp
-index 38e290c..abca943 100644
+index 45c2255..bac1182 100644
 --- a/apps/ymir-sdl3/src/app/app.cpp
 +++ b/apps/ymir-sdl3/src/app/app.cpp
 @@ -126,7 +126,7 @@
@@ -94,7 +96,7 @@ index b7abe98..02ea8c8 100644
  using namespace ymir;
  
 diff --git a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
-index 695f985..4a25e06 100644
+index 044a8fc..8feadba 100644
 --- a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
 +++ b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
 @@ -32,15 +32,10 @@ CMRC_DECLARE(Ymir_sdl3_rc);
@@ -114,15 +116,7 @@ index 695f985..4a25e06 100644
  
  #define _STR_IMPL(x) #x
  #define _STR(x) _STR_IMPL(x)
-@@ -56,7 +51,6 @@ CMRC_DECLARE(Ymir_sdl3_rc);
- #define LZMA_VERSION "25.01"    // Private dependency of libchdr
- #define LIBCHDR_VERSION "0.3.0" // Not exported
- #define MIO_VERSION "1.1.0"     // Not exported
--// #define MZ_VERSION "3.1.1"      // Private dependency of libchdr
- #define NLOHMANN_JSON_VERSION \
-     _SEMVER_STR(NLOHMANN_JSON_VERSION_MAJOR, NLOHMANN_JSON_VERSION_MINOR, NLOHMANN_JSON_VERSION_PATCH)
- #define SDL_VERSION_STR _SEMVER_STR(SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_MICRO_VERSION)
-@@ -130,7 +124,6 @@ static const struct {
+@@ -130,7 +125,6 @@ static const struct {
      {.name = "lz4",                           .version = LZ4_VERSION_STRING,         .license = licenseBSD2,          .repoURL = "https://github.com/lz4/lz4",                     .licenseURL = "https://github.com/lz4/lz4/blob/dev/lib/LICENSE",                        .homeURL = "https://lz4.org/",},
      {.name = "lzma",                          .version = LZMA_VERSION,               .license = licensePublicDomain,                                                                                                                                                       .homeURL = "https://www.7-zip.org/sdk.html",},
      {.name = "mio",                           .version = MIO_VERSION,                .license = licenseMIT,           .repoURL = "https://github.com/StrikerX3/mio",               .licenseURL = "https://github.com/StrikerX3/mio/blob/master/LICENSE"},
@@ -130,7 +124,7 @@ index 695f985..4a25e06 100644
      {.name = "moodycamel::\nConcurrentQueue", .version = "\n" MC_CONCQUEUE_VERSION,  .license = licenseBSD2,          .repoURL = "https://github.com/cameron314/concurrentqueue",  .licenseURL = "https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md"},
      {.name = "Neargye/semver",                .version = SEMVER_VERSION,             .license = licenseMIT,           .repoURL = "https://github.com/Neargye/semver",              .licenseURL = "https://github.com/Neargye/semver/blob/master/LICENSE"},
      {.name = "nghttp2",                       .version = NGHTTP2_VERSION,            .license = licenseMIT,           .repoURL = "https://github.com/nghttp2/nghttp2",             .licenseURL = "https://github.com/nghttp2/nghttp2/blob/master/COPYING",                 .homeURL = "https://nghttp2.org/"},
-@@ -149,8 +142,6 @@ static const struct {
+@@ -149,8 +143,6 @@ static const struct {
  #ifdef _WIN32
      {.name = "WIL",                                                                  .license = licenseMIT,           .repoURL = "https://github.com/Microsoft/wil",               .licenseURL = "https://github.com/microsoft/wil/blob/master/LICENSE"},
  #endif
@@ -140,7 +134,7 @@ index 695f985..4a25e06 100644
  
  
 diff --git a/vendor/CMakeLists.txt b/vendor/CMakeLists.txt
-index 4b28ba2..c66528f 100644
+index 1f64d96..c4d3f53 100644
 --- a/vendor/CMakeLists.txt
 +++ b/vendor/CMakeLists.txt
 @@ -28,6 +28,8 @@ message(STATUS "Adding vendored libraries")
@@ -192,7 +186,16 @@ index 4b28ba2..c66528f 100644
  
  # stb - https://github.com/nothings/stb
  message(STATUS "==> stb")
-@@ -82,7 +103,15 @@ if (NOT Ymir_LIBRARY_ONLY)
+@@ -77,8 +98,6 @@ if (NOT Ymir_LIBRARY_ONLY)
+     # SDL3 - https://github.com/libsdl-org/SDL
+     # - Unable to configure libdecor support for Wayland
+     # - Must be added BEFORE dear ImGui
+-    message(STATUS "==> SDL3")
+-    add_subdirectory(SDL3 EXCLUDE_FROM_ALL)
+ 
+     # dear ImGui - https://github.com/ocornut/imgui
+     # - Using the docking branch
+@@ -88,7 +107,15 @@ if (NOT Ymir_LIBRARY_ONLY)
      # lz4 - https://github.com/lz4/lz4
      # - Unable to configure AVX2 support from vcpkg
      message(STATUS "==> lz4")
@@ -208,6 +211,19 @@ index 4b28ba2..c66528f 100644
  
      # discord-rpc - https://github.com/discord/discord-rpc
      # - Via myMCpp / PCSX2
+diff --git a/vendor/imgui/CMakeLists.txt b/vendor/imgui/CMakeLists.txt
+index ba8b35d..e460186 100644
+--- a/vendor/imgui/CMakeLists.txt
++++ b/vendor/imgui/CMakeLists.txt
+@@ -78,6 +78,8 @@ target_include_directories(imgui
+ target_compile_features(imgui PUBLIC cxx_std_20)
+ target_compile_definitions(imgui PUBLIC IMGUI_USER_CONFIG="ymir_imconfig.h")
+ 
++find_package(SDL3 CONFIG REQUIRED)
++
+ target_link_libraries(imgui PRIVATE SDL3::SDL3)
+ if (Vulkan_FOUND)
+ 	target_link_libraries(imgui PRIVATE Vulkan::Vulkan)
 -- 
-2.56.0
+2.56.1
 

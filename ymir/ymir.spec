@@ -13,9 +13,9 @@
 %bcond avx2 0
 %bcond rtmidi 0
 
-%global commit 25cd2c2d2bf994d43872e2b3776cd4cf7912387e
+%global commit 54e7e6ab9f0fd6962f3cac3b5374f1f51e6a441c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20261017
+%global date 20261117
 %bcond snapshot 1
 
 %global commit10 1e2def448e43fb3362123ab5ff039c39e1ba5cfd
@@ -49,8 +49,8 @@
 %global pkgname Ymir
 
 Name:           ymir
-Version:        0.4.0
-Release:        1%{?dist}
+Version:        0.4.2
+Release:        0.1%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPL-3.0-or-later AND BSD-2-Clause AND BSD-3-Clause AND MIT AND OFL-1.1
@@ -127,7 +127,7 @@ rm -f apps/ymir-sdl3/src/app/services/discord_rpc_service.*
 rm -f apps/ymir-sdl3/src/app/services/update_checker_service.*
 
 pushd vendor
-rm -rf discord-rpc libchdr lz4 xxHash
+rm -rf discord-rpc libchdr lz4 SDL3 xxHash
 tar -xf %{S:10} -C concurrentqueue/ --strip-components 1
 tar -xf %{S:11} -C imgui/imgui --strip-components 1
 tar -xf %{S:12} -C mio/ --strip-components 1
