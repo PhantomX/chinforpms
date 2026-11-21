@@ -1,14 +1,14 @@
-From 961f9e08c1282787188a7fac75b9958ee07c19e6 Mon Sep 17 00:00:00 2001
+From 2f20c4696420fea27d11c1dab5ecdcfc2969b647 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 1 Apr 2026 18:02:51 -0300
 Subject: [PATCH] Fix ltdp 0005 patch
 
 ---
- ltdp-0005-Option-to-disable-stories.patch | 56 +++++++++++------------
- 1 file changed, 28 insertions(+), 28 deletions(-)
+ ltdp-0005-Option-to-disable-stories.patch | 62 +++++++++++------------
+ 1 file changed, 31 insertions(+), 31 deletions(-)
 
 diff --git a/ltdp-0005-Option-to-disable-stories.patch b/ltdp-0005-Option-to-disable-stories.patch
-index 665f5d3..7279396 100644
+index 665f5d3..44d5f53 100644
 --- a/ltdp-0005-Option-to-disable-stories.patch
 +++ b/ltdp-0005-Option-to-disable-stories.patch
 @@ -5,16 +5,16 @@ index 0d9671f..f77cf4e 100644
@@ -19,11 +19,14 @@ index 665f5d3..7279396 100644
 + 
  +#include "api/api_report.h"
  +#include "base/options.h"
-  #include "base/unixtime.h"
-  #include "apiwrap.h"
-  #include "core/application.h"
+- #include "base/unixtime.h"
+- #include "apiwrap.h"
+- #include "core/application.h"
 -@@ -47,6 +49,13 @@ constexpr auto kPollingViewsPerPage = Story::kRecentViewersMax;
 -
++ #include "data/data_story_edit_sources.h"
++ #include "data/data_story_drafts.h"
++ #include "base/const_string.h"
 +@@ -49,6 +51,13 @@ constexpr auto kPollingViewsPerPage = Story::kRecentViewersMax;
 + 
   using UpdateFlag = StoryUpdate::Flag;
@@ -121,5 +124,5 @@ index 665f5d3..7279396 100644
 + 				Dialogs::kOptionDialogsUnreadOnTop,
 + 				Dialogs::Ui::kOptionDialogsMuteIcon,
 -- 
-2.55.0
+2.56.1
 

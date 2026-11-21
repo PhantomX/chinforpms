@@ -122,7 +122,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.43.254
+Version:        0.0.43.20387
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 

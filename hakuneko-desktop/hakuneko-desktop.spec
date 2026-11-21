@@ -3,25 +3,35 @@
 %global __strip /bin/true
 
 %ifarch x86_64
-%global parch amd64
-%else
-%global parch i386
+%global parch x64
 %endif
 
 %global real_name hakuneko
+%global vc_date 260903T1833
+%global vc_url https://github.com/manga-download/%{real_name}
+%global vc_id 75349a2e07e369335c959bf9cbd91670882ca9c1
 
 Name:           %{real_name}-desktop
-Version:        6.1.7
-Release:        2%{?dist}
+Version:        44.1.1
+Release:        1%{?dist}
 Summary:        Manga Downloader
 
 License:        Unlicense AND MIT
 URL:            https://hakuneko.download
 
-Source0:        https://github.com/manga-download/hakuneko/releases/download/v%{version}/%{name}_%{version}_linux_%{parch}.rpm
-Source1:        https://github.com/manga-download/hakuneko/raw/master/UNLICENSE
+Source0:        %{vc_url}/releases/download/%{vc_date}/%{real_name}-electron-v%{version}-linux-%{parch}.snap
+Source1:        %{vc_url}/raw/master/UNLICENSE
+%{lua:
+  local sizes = {16, 24, 32, 48, 64, 96, 128, 256}
+  local url = rpm.expand("%{vc_url}/raw/%{vc_id}/redist/rpm/usr/share/icons/hicolor")
+  local name = rpm.expand("%{name}")
+  for i, size in ipairs(sizes) do
+    local idx = i + 1
+    print(string.format("Source%d: %s/%dx%d/apps/%s.png#/%s-%d.png\n", idx, url, size, size, name, name, size))
+  end
+}
 
-ExclusiveArch:  %{ix86} x86_64
+ExclusiveArch:  x86_64
 
 BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
@@ -32,10 +42,7 @@ Requires:       hicolor-icon-theme
 %global __requires_exclude_from ^%{_libdir}/%{name}/resources/.*
 
 %global __requires_exclude ^libffmpeg\\.so.*$
-%global __requires_exclude %__requires_exclude|^libEGL\\.so.*$
-%global __requires_exclude %__requires_exclude|^libGLESv2\\.so.*$
-%global __requires_exclude %__requires_exclude|^libVkICD_mock_icd\\.so.*$
-%global __requires_exclude %__requires_exclude|^libvulkan\\.so.*$
+%global __requires_exclude %__requires_exclude|^libvk_swiftshader\\.so.*$
 
 
 %description
@@ -44,19 +51,25 @@ manga reader websites.
 
 %prep
 %setup -c -T
-rpm2cpio %{S:0} | cpio -imdv --no-absolute-filenames
+unsquashfs -n -d %{name} %{S:0}
 
 cp %{S:1} .
+mv %{name}/LICENSE LICENSE.electron
 
-find usr/lib/%{name}/ -name '*.so*' | xargs chmod +x
+pushd %{name}
+mv %{real_name}-electron %{name}
 
-chrpath --delete usr/lib/%{name}/%{real_name}
+rm -rf %{name}-source gpu* meta snap usr libvulkan.so*
 
-%build
+find . -type f | xargs chmod -x
+find . -name '*.so*' | xargs chmod +x
+chmod +x %{name} chrome_crashpad_handler chrome-sandbox
 
-%install
-mkdir -p %{buildroot}%{_bindir}
-cat > %{buildroot}%{_bindir}/%{name} <<'EORF'
+chrpath -d %{name}
+chrpath -k -d *.so
+popd
+
+cat > %{name}.wrapper <<'EORF'
 #!/usr/bin/bash
 APP_NAME=%{name}
 APP_PATH="%{_libdir}/%{name}"
@@ -80,26 +93,40 @@ fi
 
 LD_LIBRARY_PATH="${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
-exec "${APP_PATH}/%{real_name}" ${APP_USER_FLAGS:+"${APP_USER_FLAGS[@]}"} "$@"
+exec "${APP_PATH}/${APP_NAME}" ${APP_USER_FLAGS:+"${APP_USER_FLAGS[@]}"} "$@"
 EORF
-chmod 0755 %{buildroot}%{_bindir}/%{name}
+
+cat > %{name}.desktop <<'EOF'
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=HakuNeko Desktop
+GenericName=Manga Downloader
+Exec=%{name}
+Icon=%{name}
+Categories=Network;FileTransfer;
+EOF
+
+%build
+
+%install
+mkdir -p %{buildroot}%{_bindir}
+install -pm0755 %{name}.wrapper %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
-cp -rp usr/lib/%{name}/{%{real_name},kindlegen,locales,resources,*.{bin,dat,pak,so}} \
+cp -rp %{name}/{%{name},chrome-sandbox,chrome_crashpad_handler,locales,resources,version,*.{bin,dat,json,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
-  --set-key="Exec" \
-  --set-value="%{name}" \
-  usr/share/applications/%{name}.desktop
+  %{name}.desktop
 
 for res in 16 24 32 48 64 96 128 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  install -pm0644 usr/share/icons/hicolor/${res}x${res}/apps/%{name}.png \
-    ${dir}/
+  install -pm0644 %{_sourcedir}/%{name}-${res}.png \
+    ${dir}/%{name}.png
 done
 
 rm -f %{name}.lang.temp
@@ -121,14 +148,17 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %files -f %{name}.lang
-%license UNLICENSE
+%license UNLICENSE LICENSE.electron %{name}/LICENSES.*.html
 %{_bindir}/%{name}
-%{_libdir}/%{name}/%{real_name}
-%{_libdir}/%{name}/kindlegen
+%{_libdir}/%{name}/%{name}
+%{_libdir}/%{name}/chrome_crashpad_handler
 %{_libdir}/%{name}/*.bin
 %{_libdir}/%{name}/*.dat
+%{_libdir}/%{name}/*.json
 %{_libdir}/%{name}/*.pak
 %{_libdir}/%{name}/*.so
+%{_libdir}/%{name}/version
+%attr(4711,root,root) %{_libdir}/%{name}/chrome-sandbox
 %dir %{_libdir}/%{name}/locales
 %{_libdir}/%{name}/locales/en-US*.pak
 %{_libdir}/%{name}/resources
@@ -137,6 +167,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Fri Nov 20 2026 Phantom X <megaphantomx at hotmail dot com> - 44.1.1-1
+- 44.1.1
+
 * Wed Dec  2 2020 Phantom X <megaphantomx at hotmail dot com> - 6.1.7-2
 - Fix gpu acceleration
 
