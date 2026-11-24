@@ -7,10 +7,9 @@
  Makefile                                           |  38 +-
  arch/arm/boot/dts/broadcom/bcm2711-rpi-cm4-io.dts  |  21 +-
  arch/arm64/Kconfig                                 |   2 +-
- arch/arm64/boot/dts/broadcom/bcm2712-d-rpi-5-b.dts |   5 +
- .../boot/dts/broadcom/bcm2712-rpi-5-b-base.dtsi    |  41 ++
+ .../boot/dts/broadcom/bcm2712-rpi-5-b-base.dtsi    |   6 +
  arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts   |  34 ++
- arch/arm64/boot/dts/broadcom/bcm2712.dtsi          |  91 ++++
+ arch/arm64/boot/dts/broadcom/bcm2712.dtsi          |  80 +++
  arch/arm64/boot/dts/broadcom/rp1-common.dtsi       | 128 +++++
  arch/arm64/kernel/setup.c                          |  27 +
  arch/s390/include/asm/ipl.h                        |   1 +
@@ -34,11 +33,8 @@
  drivers/firmware/efi/libstub/fdt.c                 |   5 +
  drivers/firmware/efi/libstub/secureboot.c          |  14 +-
  drivers/firmware/efi/secureboot.c                  |  38 ++
- drivers/firmware/raspberrypi.c                     |  24 +
- drivers/gpu/drm/vc4/vc4_bo.c                       |   3 +-
- drivers/gpu/drm/vc4/vc4_drv.c                      |  29 --
- drivers/gpu/drm/vc4/vc4_hvs.c                      |  10 +
- drivers/gpu/drm/vc4/vc4_v3d.c                      |   7 +
+ drivers/firmware/raspberrypi.c                     |  25 +
+ .../gpu/drm/i915/display/intel_dp_link_training.c  |  16 +-
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
  drivers/iommu/Kconfig                              |  15 +
  drivers/iommu/Makefile                             |   1 +
@@ -53,7 +49,12 @@
  drivers/iommu/generic_pt/fmt/iommu_bcm2712.c       |   6 +
  drivers/iommu/generic_pt/kunit_iommu_pt.h          |   2 +-
  drivers/iommu/iommu.c                              |  22 +
+ drivers/media/i2c/cvs/Kconfig                      |   1 +
+ drivers/media/i2c/cvs/core.c                       |  14 +-
+ drivers/media/i2c/cvs/v4l2.c                       |  82 ---
+ drivers/media/pci/intel/ipu-bridge.c               | 189 ++++++-
  drivers/pci/quirks.c                               |  24 +
+ drivers/phy/qualcomm/phy-qcom-qmp-pcie.c           |  31 +-
  drivers/pwm/Kconfig                                |   7 +
  drivers/pwm/Makefile                               |   1 +
  drivers/pwm/pwm-rp1.c                              | 428 ++++++++++++++++
@@ -61,11 +62,13 @@
  drivers/rtc/Makefile                               |   1 +
  drivers/rtc/rtc-raspberrypi.c                      | 278 +++++++++++
  drivers/usb/core/hub.c                             |   7 +
+ fs/btrfs/extent_io.c                               |   2 +-
  include/linux/crypto.h                             |   2 +
  include/linux/efi.h                                |  22 +-
  include/linux/generic_pt/common.h                  |   6 +
  include/linux/generic_pt/iommu.h                   |  12 +
  include/linux/security.h                           |   9 +
+ include/media/ipu-bridge.h                         |  53 +-
  include/soc/bcm2835/raspberrypi-firmware.h         |   2 +
  kernel/module/signing.c                            |   9 +-
  scripts/Makefile.lib                               |   3 +
@@ -76,7 +79,7 @@
  tools/testing/selftests/bpf/DENYLIST.rhel          |  76 +++
  tools/testing/selftests/bpf/Makefile               |   4 +-
  tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  31 --
- 79 files changed, 2848 insertions(+), 138 deletions(-)
+ 82 files changed, 3030 insertions(+), 245 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/arm/bcm/bcm2835.yaml b/Documentation/devicetree/bindings/arm/bcm/bcm2835.yaml
 index 2729a542c4f3..7ad6583f7fae 100644
@@ -311,10 +314,10 @@ index 782389bd5cd3..33671e98b824 100644
  M:	Florian Fainelli <florian.fainelli@broadcom.com>
  M:	Ray Jui <rjui@broadcom.com>
 diff --git a/Makefile b/Makefile
-index 05c5b682ad50..147865c7a62e 100644
+index 28ae92d9d760..9c5d02c52144 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -358,6 +358,17 @@ ifneq ($(filter install,$(MAKECMDGOALS)),)
+@@ -359,6 +359,17 @@ ifneq ($(filter install,$(MAKECMDGOALS)),)
      endif
  endif
  
@@ -332,7 +335,7 @@ index 05c5b682ad50..147865c7a62e 100644
  ifdef mixed-build
  # ===========================================================================
  # We're called with mixed targets (*config and build targets).
-@@ -1449,6 +1460,8 @@ uapi-asm-generic:
+@@ -1450,6 +1461,8 @@ uapi-asm-generic:
  # Generate some files
  # ---------------------------------------------------------------------------
  
@@ -341,7 +344,7 @@ index 05c5b682ad50..147865c7a62e 100644
  # KERNELRELEASE can change from a few different places, meaning version.h
  # needs to be updated, so this check is forced on all builds
  
-@@ -1473,7 +1486,13 @@ define filechk_version.h
+@@ -1474,7 +1487,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -356,7 +359,7 @@ index 05c5b682ad50..147865c7a62e 100644
  endef
  
  $(version_h): private PATCHLEVEL := $(or $(PATCHLEVEL), 0)
-@@ -2150,6 +2169,23 @@ endif
+@@ -2151,6 +2170,23 @@ endif
  
  ifdef CONFIG_MODULES
  
@@ -436,24 +439,8 @@ index 70994918fab5..82e9d31d471b 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-diff --git a/arch/arm64/boot/dts/broadcom/bcm2712-d-rpi-5-b.dts b/arch/arm64/boot/dts/broadcom/bcm2712-d-rpi-5-b.dts
-index 127be0fc27c2..ae4b7c587dbc 100644
---- a/arch/arm64/boot/dts/broadcom/bcm2712-d-rpi-5-b.dts
-+++ b/arch/arm64/boot/dts/broadcom/bcm2712-d-rpi-5-b.dts
-@@ -3,6 +3,11 @@
- 
- #include "bcm2712-rpi-5-b.dts"
- 
-+/ {
-+	compatible = "raspberrypi,5-model-b-d0", "brcm,bcm2712-d0";
-+	model = "Raspberry Pi 5 d0 Stepping";
-+};
-+
- &gio_aon {
- 	brcm,gpio-bank-widths = <15 6>;
- 
 diff --git a/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b-base.dtsi b/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b-base.dtsi
-index b7a6bc34ae1a..e5030da60f9e 100644
+index d998bfae91ac..e5030da60f9e 100644
 --- a/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b-base.dtsi
 +++ b/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b-base.dtsi
 @@ -3,6 +3,7 @@
@@ -464,26 +451,7 @@ index b7a6bc34ae1a..e5030da60f9e 100644
  #include "bcm2712.dtsi"
  
  / {
-@@ -104,6 +105,18 @@ wl_on_reg: wl-on-reg {
- 	};
- };
- 
-+&ddc0 {
-+	status = "okay";
-+};
-+
-+&ddc1 {
-+	status = "okay";
-+};
-+
-+&disp_intr {
-+	status = "okay";
-+};
-+
- &pinctrl {
- 	bt_shutdown_default: bt-shutdown-default-state {
- 		function = "gpio";
-@@ -227,19 +240,35 @@ bluetooth: bluetooth {
+@@ -239,6 +240,11 @@ bluetooth: bluetooth {
  	};
  };
  
@@ -495,49 +463,6 @@ index b7a6bc34ae1a..e5030da60f9e 100644
  &hvs {
  	clocks = <&firmware_clocks 4>, <&firmware_clocks 16>;
  	clock-names = "core", "disp";
-+	status = "okay";
- };
- 
- &hdmi0 {
- 	clocks = <&firmware_clocks 13>, <&firmware_clocks 14>, <&dvp 0>, <&clk_27MHz>;
- 	clock-names = "hdmi", "bvb", "audio", "cec";
-+	status = "okay";
- };
- 
- &hdmi1 {
- 	clocks = <&firmware_clocks 13>, <&firmware_clocks 14>, <&dvp 1>, <&clk_27MHz>;
- 	clock-names = "hdmi", "bvb", "audio", "cec";
-+	status = "okay";
-+};
-+
-+&mop {
-+	status = "okay";
-+};
-+
-+&moplet {
-+	status = "okay";
- };
- 
- &pcie1 {
-@@ -250,6 +279,18 @@ &pcie2 {
- 	status = "okay";
- };
- 
-+&pixelvalve0 {
-+	status = "okay";
-+};
-+
-+&pixelvalve1 {
-+	status = "okay";
-+};
-+
- &v3d {
- 	clocks = <&firmware_clocks 5>;
- };
-+
-+&vc4 {
-+	status = "okay";
-+};
 diff --git a/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts b/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts
 index 0fc57e72632e..75b262e292cd 100644
 --- a/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts
@@ -596,7 +521,7 @@ index 0fc57e72632e..75b262e292cd 100644
  	pinctrl-0 = <&usb_vbus_default_state>;
  	pinctrl-names = "default";
 diff --git a/arch/arm64/boot/dts/broadcom/bcm2712.dtsi b/arch/arm64/boot/dts/broadcom/bcm2712.dtsi
-index 45aa8ec5e2b1..edae2f3584a8 100644
+index a2c71a4355bf..edae2f3584a8 100644
 --- a/arch/arm64/boot/dts/broadcom/bcm2712.dtsi
 +++ b/arch/arm64/boot/dts/broadcom/bcm2712.dtsi
 @@ -10,6 +10,15 @@ / {
@@ -629,75 +554,10 @@ index 45aa8ec5e2b1..edae2f3584a8 100644
  	};
  
  	cpus: cpus {
-@@ -359,12 +375,14 @@ pixelvalve0: pixelvalve@7c410000 {
- 			compatible = "brcm,bcm2712-pixelvalve0";
- 			reg = <0x7c410000 0x100>;
- 			interrupts = <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>;
-+			status = "disabled";
- 		};
- 
- 		pixelvalve1: pixelvalve@7c411000 {
- 			compatible = "brcm,bcm2712-pixelvalve1";
- 			reg = <0x7c411000 0x100>;
- 			interrupts = <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>;
-+			status = "disabled";
- 		};
- 
- 		mop: mop@7c500000 {
-@@ -372,6 +390,7 @@ mop: mop@7c500000 {
- 			reg = <0x7c500000 0x28>;
- 			interrupt-parent = <&disp_intr>;
- 			interrupts = <1>;
-+			status = "disabled";
- 		};
- 
- 		moplet: moplet@7c501000 {
-@@ -379,6 +398,7 @@ moplet: moplet@7c501000 {
- 			reg = <0x7c501000 0x20>;
- 			interrupt-parent = <&disp_intr>;
- 			interrupts = <0>;
-+			status = "disabled";
- 		};
- 
- 		disp_intr: interrupt-controller@7c502000 {
-@@ -387,6 +407,7 @@ disp_intr: interrupt-controller@7c502000 {
- 			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-controller;
- 			#interrupt-cells = <1>;
-+			status = "disabled";
- 		};
- 
- 		dvp: clock@7c700000 {
-@@ -405,6 +426,7 @@ ddc0: i2c@7d508200 {
- 			clock-frequency = <97500>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-+			status = "disabled";
- 		};
- 
- 		ddc1: i2c@7d508280 {
-@@ -415,6 +437,7 @@ ddc1: i2c@7d508280 {
- 			clock-frequency = <97500>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-+			status = "disabled";
- 		};
- 
- 		bsc_irq: interrupt-controller@7d508380 {
-@@ -460,6 +483,7 @@ hdmi0: hdmi@7c701400 {
- 			interrupt-names = "cec-tx", "cec-rx", "cec-low",
- 					  "hpd-connected", "hpd-removed";
- 			ddc = <&ddc0>;
-+			status = "disabled";
- 		};
- 
- 		hdmi1: hdmi@7c706400 {
-@@ -489,6 +513,19 @@ hdmi1: hdmi@7c706400 {
- 			interrupt-names = "cec-tx", "cec-rx", "cec-low",
- 					  "hpd-connected", "hpd-removed";
+@@ -499,6 +515,18 @@ hdmi1: hdmi@7c706400 {
  			ddc = <&ddc1>;
-+			status = "disabled";
-+		};
+ 			status = "disabled";
+ 		};
 +
 +		avs_monitor: avs-monitor@7d542000 {
 +			compatible = "brcm,bcm2711-avs-monitor",
@@ -709,10 +569,11 @@ index 45aa8ec5e2b1..edae2f3584a8 100644
 +				compatible = "brcm,bcm2711-thermal";
 +				#thermal-sensor-cells = <0>;
 +			};
- 		};
++		};
  	};
  
-@@ -626,6 +663,19 @@ pcie2: pcie@1000120000 {
+ 	axi: axi {
+@@ -635,6 +663,19 @@ pcie2: pcie@1000120000 {
  			status = "disabled";
  		};
  
@@ -732,7 +593,7 @@ index 45aa8ec5e2b1..edae2f3584a8 100644
  		mip0: msi-controller@1000130000 {
  			compatible = "brcm,bcm2712-mip";
  			reg = <0x10 0x00130000 0x00 0xc0>,
-@@ -663,10 +713,24 @@ v3d: gpu@1002000000 {
+@@ -672,6 +713,19 @@ v3d: gpu@1002000000 {
  			interrupts = <GIC_SPI 250 IRQ_TYPE_LEVEL_HIGH>,
  				     <GIC_SPI 249 IRQ_TYPE_LEVEL_HIGH>;
  		};
@@ -752,18 +613,13 @@ index 45aa8ec5e2b1..edae2f3584a8 100644
  	};
  
  	vc4: gpu {
- 		compatible = "brcm,bcm2712-vc6";
-+		status = "disabled";
- 	};
- 
- 	timer {
-@@ -701,5 +765,32 @@ hvs: hvs@107c580000 {
+@@ -711,6 +765,32 @@ hvs: hvs@107c580000 {
  		interrupt-parent = <&disp_intr>;
  		interrupts = <2>, <9>, <16>;
  		interrupt-names = "ch0-eof", "ch1-eof", "ch2-eof";
 +		iommus = <&iommu4>;
-+		status = "disabled";
-+	};
+ 		status = "disabled";
+ 	};
 +
 +	thermal-zones {
 +		cpu_thermal: cpu-thermal {
@@ -788,7 +644,7 @@ index 45aa8ec5e2b1..edae2f3584a8 100644
 +	usbphy: phy {
 +		compatible = "usb-nop-xceiv";
 +		#phy-cells = <0>;
- 	};
++	};
  };
 diff --git a/arch/arm64/boot/dts/broadcom/rp1-common.dtsi b/arch/arm64/boot/dts/broadcom/rp1-common.dtsi
 index 16f535939583..980a5f3b231e 100644
@@ -1297,7 +1153,7 @@ index a670722ddd5a..748d1250a852 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 163a3cccf197..cce23a1b5d71 100644
+index e8189849eaa6..c8a54ab16ce4 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1796,6 +1796,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
@@ -1317,7 +1173,7 @@ index 163a3cccf197..cce23a1b5d71 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index f3fd56f15334..a4a62a16164f 100644
+index 222af8d9fc01..821cac584524 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -727,6 +727,24 @@ int ahci_stop_engine(struct ata_port *ap)
@@ -1564,7 +1420,7 @@ index 0327a39d31fa..5b5332b4de78 100644
  EXPORT_SYMBOL_GPL(efi_status_to_err);
  
 diff --git a/drivers/firmware/efi/libstub/fdt.c b/drivers/firmware/efi/libstub/fdt.c
-index 23b3543d3041..0d08a549a10b 100644
+index f01450b49975..db12fcc9580d 100644
 --- a/drivers/firmware/efi/libstub/fdt.c
 +++ b/drivers/firmware/efi/libstub/fdt.c
 @@ -132,6 +132,11 @@ static efi_status_t update_fdt(void *orig_fdt, unsigned long orig_fdt_size,
@@ -1660,7 +1516,7 @@ index 000000000000..de0a3714a5d4
 +	}
 +}
 diff --git a/drivers/firmware/raspberrypi.c b/drivers/firmware/raspberrypi.c
-index 0aa322e9a2e7..443459c8c90f 100644
+index 0aa322e9a2e7..ab1c77aeb199 100644
 --- a/drivers/firmware/raspberrypi.c
 +++ b/drivers/firmware/raspberrypi.c
 @@ -24,6 +24,7 @@
@@ -1671,7 +1527,7 @@ index 0aa322e9a2e7..443459c8c90f 100644
  
  struct rpi_firmware {
  	struct mbox_client cl;
-@@ -231,6 +232,26 @@ static void rpi_register_clk_driver(struct device *dev)
+@@ -231,6 +232,27 @@ static void rpi_register_clk_driver(struct device *dev)
  						-1, NULL, 0);
  }
  
@@ -1683,7 +1539,8 @@ index 0aa322e9a2e7..443459c8c90f 100644
 +	 * Check if our model of Raspberry Pi board is from the 5th gen
 +	 * as the RTC is only present on that model.
 +	 */
-+	if (!of_machine_is_compatible("brcm,bcm2712"))
++	if (!(of_machine_is_compatible("brcm,bcm2712") ||
++	      of_machine_is_compatible("brcm,bcm2712-d0")))
 +		return;
 +
 +	pdev = platform_device_register_data(dev, "raspberrypi-rtc",
@@ -1698,7 +1555,7 @@ index 0aa322e9a2e7..443459c8c90f 100644
  unsigned int rpi_firmware_clk_get_max_rate(struct rpi_firmware *fw, unsigned int id)
  {
  	struct rpi_firmware_clk_rate_request msg =
-@@ -305,6 +326,7 @@ static int rpi_firmware_probe(struct platform_device *pdev)
+@@ -305,6 +327,7 @@ static int rpi_firmware_probe(struct platform_device *pdev)
  	rpi_firmware_print_firmware_revision(fw);
  	rpi_register_hwmon_driver(dev, fw);
  	rpi_register_clk_driver(dev);
@@ -1706,7 +1563,7 @@ index 0aa322e9a2e7..443459c8c90f 100644
  
  	return 0;
  }
-@@ -327,6 +349,8 @@ static void rpi_firmware_remove(struct platform_device *pdev)
+@@ -327,6 +350,8 @@ static void rpi_firmware_remove(struct platform_device *pdev)
  	rpi_hwmon = NULL;
  	platform_device_unregister(rpi_clk);
  	rpi_clk = NULL;
@@ -1715,131 +1572,60 @@ index 0aa322e9a2e7..443459c8c90f 100644
  
  	rpi_firmware_put(fw);
  }
-diff --git a/drivers/gpu/drm/vc4/vc4_bo.c b/drivers/gpu/drm/vc4/vc4_bo.c
-index 7b8b3364000f..da4b11b7ce9f 100644
---- a/drivers/gpu/drm/vc4/vc4_bo.c
-+++ b/drivers/gpu/drm/vc4/vc4_bo.c
-@@ -303,7 +303,8 @@ static void vc4_bo_purge(struct drm_gem_object *obj)
- 
- 	drm_vma_node_unmap(&obj->vma_node, dev->anon_inode->i_mapping);
- 
--	dma_free_wc(dev->dev, obj->size, bo->base.vaddr, bo->base.dma_addr);
-+	dma_free_wc(drm_dev_dma_dev(dev), obj->size, bo->base.vaddr,
-+		    bo->base.dma_addr);
- 	bo->base.vaddr = NULL;
- 	bo->madv = __VC4_MADV_PURGED;
- }
-diff --git a/drivers/gpu/drm/vc4/vc4_drv.c b/drivers/gpu/drm/vc4/vc4_drv.c
-index 7b64e1ed02d4..6072b4e1ffed 100644
---- a/drivers/gpu/drm/vc4/vc4_drv.c
-+++ b/drivers/gpu/drm/vc4/vc4_drv.c
-@@ -24,10 +24,8 @@
- #include <linux/clk.h>
- #include <linux/component.h>
- #include <linux/device.h>
--#include <linux/dma-mapping.h>
- #include <linux/io.h>
- #include <linux/module.h>
--#include <linux/of_device.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- 
-@@ -273,16 +271,6 @@ static void vc4_component_unbind_all(void *ptr)
- 	component_unbind_all(vc4->dev, &vc4->base);
+diff --git a/drivers/gpu/drm/i915/display/intel_dp_link_training.c b/drivers/gpu/drm/i915/display/intel_dp_link_training.c
+index 9a692f4fdfee..d77f971d9ad1 100644
+--- a/drivers/gpu/drm/i915/display/intel_dp_link_training.c
++++ b/drivers/gpu/drm/i915/display/intel_dp_link_training.c
+@@ -773,11 +773,14 @@ static u8 intel_dp_phy_preemph_max(struct intel_dp *intel_dp,
  }
  
--static const struct of_device_id vc4_dma_range_matches[] = {
--	{ .compatible = "brcm,bcm2711-hvs" },
--	{ .compatible = "brcm,bcm2712-hvs" },
--	{ .compatible = "brcm,bcm2835-hvs" },
--	{ .compatible = "brcm,bcm2835-v3d" },
--	{ .compatible = "brcm,cygnus-v3d" },
--	{ .compatible = "brcm,vc4-v3d" },
--	{}
--};
--
- static int vc4_drm_bind(struct device *dev)
+ static bool has_per_lane_signal_levels(struct intel_dp *intel_dp,
++				       const struct intel_crtc_state *crtc_state,
+ 				       enum drm_dp_phy dp_phy)
  {
- 	struct platform_device *pdev = to_platform_device(dev);
-@@ -295,8 +283,6 @@ static int vc4_drm_bind(struct device *dev)
- 	enum vc4_gen gen;
- 	int ret = 0;
+ 	struct intel_display *display = to_intel_display(intel_dp);
  
--	dev->coherent_dma_mask = DMA_BIT_MASK(32);
--
- 	gen = (enum vc4_gen)of_device_get_match_data(dev);
+-	return !intel_dp_phy_is_downstream_of_source(intel_dp, dp_phy) ||
++	/* UHBR training always adjusts the source PHY, even with LTTPRs. */
++	return (!intel_dp_is_uhbr(crtc_state) &&
++		!intel_dp_phy_is_downstream_of_source(intel_dp, dp_phy)) ||
+ 		DISPLAY_VER(display) >= 10 || display->platform.broxton;
+ }
  
- 	if (gen > VC4_GEN_4)
-@@ -304,21 +290,6 @@ static int vc4_drm_bind(struct device *dev)
- 	else
- 		driver = &vc4_drm_driver;
+@@ -790,7 +793,7 @@ static u8 intel_dp_get_lane_adjust_tx_ffe_preset(struct intel_dp *intel_dp,
+ {
+ 	u8 tx_ffe = 0;
  
--	if (gen >= VC4_GEN_6_C)
--		dma_set_mask_and_coherent(dev, DMA_BIT_MASK(36));
--	else
--		dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
--
--	node = of_find_matching_node_and_match(NULL, vc4_dma_range_matches,
--					       NULL);
--	if (node) {
--		ret = of_dma_configure(dev, node, true);
--		of_node_put(node);
--
--		if (ret)
--			return ret;
--	}
--
- 	vc4 = devm_drm_dev_alloc(dev, driver, struct vc4_dev, base);
- 	if (IS_ERR(vc4))
- 		return PTR_ERR(vc4);
-diff --git a/drivers/gpu/drm/vc4/vc4_hvs.c b/drivers/gpu/drm/vc4/vc4_hvs.c
-index e715147d091c..b1fb096858cc 100644
---- a/drivers/gpu/drm/vc4/vc4_hvs.c
-+++ b/drivers/gpu/drm/vc4/vc4_hvs.c
-@@ -22,6 +22,7 @@
- #include <linux/bitfield.h>
- #include <linux/clk.h>
- #include <linux/component.h>
-+#include <linux/dma-mapping.h>
- #include <linux/platform_device.h>
+-	if (has_per_lane_signal_levels(intel_dp, dp_phy)) {
++	if (has_per_lane_signal_levels(intel_dp, crtc_state, dp_phy)) {
+ 		lane = min(lane, crtc_state->lane_count - 1);
+ 		tx_ffe = drm_dp_get_adjust_tx_ffe_preset(link_status, lane);
+ 	} else {
+@@ -813,7 +816,7 @@ static u8 intel_dp_get_lane_adjust_vswing_preemph(struct intel_dp *intel_dp,
+ 	u8 voltage_max;
+ 	u8 preemph_max;
  
- #include <drm/drm_atomic_helper.h>
-@@ -1662,6 +1663,15 @@ static int vc4_hvs_bind(struct device *dev, struct device *master, void *data)
- 		hvs->regset.nregs = ARRAY_SIZE(vc4_hvs_regs);
+-	if (has_per_lane_signal_levels(intel_dp, dp_phy)) {
++	if (has_per_lane_signal_levels(intel_dp, crtc_state, dp_phy)) {
+ 		lane = min(lane, crtc_state->lane_count - 1);
+ 
+ 		v = drm_dp_get_adjust_request_voltage(link_status, lane);
+@@ -1019,7 +1022,12 @@ void intel_dp_set_signal_levels(struct intel_dp *intel_dp,
+ 		       TRAIN_SET_PREEMPH_ARGS(intel_dp->train_set));
  	}
  
-+	if (vc4->gen >= VC4_GEN_6_C) {
-+		ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(36));
-+		if (ret)
-+			return ret;
-+	}
-+
-+	if (drm_dev_dma_dev(drm) == drm->dev)
-+		drm_dev_set_dma_dev(drm, dev);
-+
- 	if (vc4->gen >= VC4_GEN_5) {
- 		struct rpi_firmware *firmware;
- 		struct device_node *node;
-diff --git a/drivers/gpu/drm/vc4/vc4_v3d.c b/drivers/gpu/drm/vc4/vc4_v3d.c
-index 6844e8f3948c..1b8153c69737 100644
---- a/drivers/gpu/drm/vc4/vc4_v3d.c
-+++ b/drivers/gpu/drm/vc4/vc4_v3d.c
-@@ -441,6 +441,13 @@ static int vc4_v3d_bind(struct device *dev, struct device *master, void *data)
- 	vc4->v3d = v3d;
- 	v3d->vc4 = vc4;
- 
+-	if (intel_dp_phy_is_downstream_of_source(intel_dp, dp_phy))
 +	/*
-+	 * In headless setups where HVS is absent, use V3D as the fallback
-+	 * DMA controller for buffer allocations.
++	 * UHBR links use transparent training, so the source PHY must be
++	 * programmed during the DPRX training phase even with LTTPRs present.
 +	 */
-+	if (drm_dev_dma_dev(drm) == drm->dev)
-+		drm_dev_set_dma_dev(drm, dev);
-+
- 	v3d->clk = devm_clk_get_optional(dev, NULL);
- 	if (IS_ERR(v3d->clk))
- 		return dev_err_probe(dev, PTR_ERR(v3d->clk), "Failed to get V3D clock\n");
++	if (intel_dp_is_uhbr(crtc_state) ||
++	    intel_dp_phy_is_downstream_of_source(intel_dp, dp_phy))
+ 		encoder->set_signal_levels(encoder, crtc_state);
+ }
+ 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index 2247ad55d444..5f9da88479e8 100644
+index 61e9971bdc6b..63286558662e 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -12,6 +12,7 @@
@@ -1850,7 +1636,7 @@ index 2247ad55d444..5f9da88479e8 100644
  #include <linux/io.h>
  #include <linux/err.h>
  #include <linux/fs.h>
-@@ -2458,6 +2459,16 @@ static const struct amba_id etm4_ids[] = {
+@@ -2481,6 +2482,16 @@ static const struct amba_id etm4_ids[] = {
  	{},
  };
  
@@ -1867,7 +1653,7 @@ index 2247ad55d444..5f9da88479e8 100644
  MODULE_DEVICE_TABLE(amba, etm4_ids);
  
  static struct amba_driver etm4x_amba_driver = {
-@@ -2532,6 +2543,11 @@ static int __init etm4x_init(void)
+@@ -2555,6 +2566,11 @@ static int __init etm4x_init(void)
  {
  	int ret;
  
@@ -1879,7 +1665,7 @@ index 2247ad55d444..5f9da88479e8 100644
  	ret = etm4_pm_setup();
  
  	/* etm4_pm_setup() does its own cleanup - exit on error */
-@@ -2558,6 +2574,9 @@ static int __init etm4x_init(void)
+@@ -2581,6 +2597,9 @@ static int __init etm4x_init(void)
  
  static void __exit etm4x_exit(void)
  {
@@ -3022,8 +2808,568 @@ index cd1bca7ede9a..821027f45794 100644
  /**
   * iommu_setup_default_domain - Set the default_domain for the group
   * @group: Group to change
+diff --git a/drivers/media/i2c/cvs/Kconfig b/drivers/media/i2c/cvs/Kconfig
+index 4309d20dd726..f482f1ccc38a 100644
+--- a/drivers/media/i2c/cvs/Kconfig
++++ b/drivers/media/i2c/cvs/Kconfig
+@@ -4,6 +4,7 @@ config VIDEO_INTEL_CVS
+ 	tristate "Intel CVS CSI-2 bridge support"
+ 	depends on I2C && ACPI && VIDEO_DEV
+ 	depends on IPU_BRIDGE || !IPU_BRIDGE
++	default VIDEO_INTEL_IPU6
+ 	select MEDIA_CONTROLLER
+ 	select VIDEO_V4L2_SUBDEV_API
+ 	select V4L2_FWNODE
+diff --git a/drivers/media/i2c/cvs/core.c b/drivers/media/i2c/cvs/core.c
+index 8d857bbd8ab5..d9c51e1c0fb5 100644
+--- a/drivers/media/i2c/cvs/core.c
++++ b/drivers/media/i2c/cvs/core.c
+@@ -21,7 +21,6 @@
+ #include <linux/workqueue.h>
+ 
+ #include <media/ipu-bridge.h>
+-#include <media/ipu6-pci-table.h>
+ 
+ #include "icvs.h"
+ 
+@@ -70,6 +69,13 @@ static const struct icvs_device_quirk cvs_quirk_table[] = {
+ 			  ICVS_NO_CAPS |
+ 			  ICVS_NO_FW_UPDATE
+ 	},	/* Lattice NX33 */
++	{ 0x2ac1, 0x20d1, ICVS_NO_MIPI_CONFIG |
++			  ICVS_NO_CAPS |
++			  ICVS_NO_FW_UPDATE
++	},	/*
++		 * The Lattice device was found on a Dell laptop
++		 * XPS 14 (Dell 14 Premium) DA14250
++		 */
+ 	{ 0x06CB, 0x0701, ICVS_SKIP_FW_RESET |
+ 			  ICVS_HOST_SENSOR_PWR_CTRL |
+ 			  ICVS_HOST_PRIV_CTRL |
+@@ -656,14 +662,12 @@ static int cvs_configure_dev_caps(struct icvs *ctx)
+  */
+ static int cvs_core_probe(struct device *dev, struct i2c_client *i2c)
+ {
+-	struct pci_dev *ipu = NULL;
++	struct pci_dev *ipu;
+ 	struct icvs *ctx;
+ 	int ret;
+ 
+ 	/* Locate IPU device */
+-	for (unsigned int i = 0; !ipu && ipu6_pci_tbl[i].vendor; i++)
+-		ipu = pci_get_device(ipu6_pci_tbl[i].vendor,
+-				     ipu6_pci_tbl[i].device, NULL);
++	ipu = ipu_bridge_get_ipu6();
+ 	for (unsigned int i = 0; !ipu && icvs_ipu7_tbl[i].vendor; i++)
+ 		ipu = pci_get_device(icvs_ipu7_tbl[i].vendor,
+ 				     icvs_ipu7_tbl[i].device, NULL);
+diff --git a/drivers/media/i2c/cvs/v4l2.c b/drivers/media/i2c/cvs/v4l2.c
+index 863112cde266..e2104ed2b932 100644
+--- a/drivers/media/i2c/cvs/v4l2.c
++++ b/drivers/media/i2c/cvs/v4l2.c
+@@ -72,19 +72,6 @@ static int csi_set_link_cfg(struct icvs *ctx, u64 link_freq)
+  * Streaming
+  */
+ 
+-/**
+- * cvs_csi_enable_streams - Start streaming through the bridge
+- * @sd: Sub-device pointer
+- * @state: Active state
+- * @pad: Pad identifier (must be ICVS_CSI_PAD_SOURCE)
+- * @streams_mask: Streams to enable (bit 0 supported)
+- *
+- * Runtime-resumes the bridge (triggering cvs_runtime_resume() to claim CSI-2
+- * link ownership), fetches the link frequency, programs the MIPI configuration,
+- * and forwards the enable request downstream.
+- *
+- * Return: 0 on success or negative errno.
+- */
+ static int cvs_csi_enable_streams(struct v4l2_subdev *sd,
+ 				  struct v4l2_subdev_state *state,
+ 				  u32 pad, u64 streams_mask)
+@@ -130,19 +117,6 @@ static int cvs_csi_enable_streams(struct v4l2_subdev *sd,
+ 	return ret;
+ }
+ 
+-/**
+- * cvs_csi_disable_streams - Stop streaming through the bridge
+- * @sd: Sub-device pointer
+- * @state: Active state
+- * @pad: Pad identifier (must be ICVS_CSI_PAD_SOURCE)
+- * @streams_mask: Streams to disable (bit 0 supported)
+- *
+- * Disables the remote sensor stream then drops the PM reference acquired
+- * during enable. After the autosuspend delay, cvs_runtime_suspend() will
+- * return CSI-2 link ownership to CVS firmware.
+- *
+- * Return: 0 on success or negative errno.
+- */
+ static int cvs_csi_disable_streams(struct v4l2_subdev *sd,
+ 				   struct v4l2_subdev_state *state,
+ 				   u32 pad, u64 streams_mask)
+@@ -168,15 +142,6 @@ static int cvs_csi_disable_streams(struct v4l2_subdev *sd,
+ /*
+  * Pad operations / formats
+  */
+-/**
+- * cvs_csi_init_state - Initialize pad formats in subdev state
+- * @sd: Sub-device
+- * @state: State container
+- *
+- * Sets all pad formats to a minimal 1x1 default.
+- *
+- * Return: 0.
+- */
+ static int cvs_csi_init_state(struct v4l2_subdev *sd,
+ 			      struct v4l2_subdev_state *state)
+ {
+@@ -187,17 +152,6 @@ static int cvs_csi_init_state(struct v4l2_subdev *sd,
+ 	return 0;
+ }
+ 
+-/**
+- * cvs_csi_set_fmt - Negotiate pad format
+- * @sd: Sub-device
+- * @state: State
+- * @format: Desired / returned format
+- *
+- * Mirrors sink format onto source pad. Accepts many media bus codes, falling
+- * back to Y8 if unsupported. Normalizes field setting.
+- *
+- * Return: 0.
+- */
+ static int cvs_csi_set_fmt(struct v4l2_subdev *sd,
+ 			   struct v4l2_subdev_state *state,
+ 			   struct v4l2_subdev_format *format)
+@@ -320,17 +274,6 @@ static int cvs_csi_set_fmt(struct v4l2_subdev *sd,
+ 	return 0;
+ }
+ 
+-/**
+- * cvs_csi_get_mbus_config - Provide current CSI-2 bus configuration
+- * @sd: Sub-device
+- * @pad: Pad index
+- * @cfg: Returned bus config
+- *
+- * Fills lane ordering and number of lanes; retrieves link frequency from
+- * remote entity.
+- *
+- * Return: 0 on success or negative errno.
+- */
+ static int cvs_csi_get_mbus_config(struct v4l2_subdev *sd, unsigned int pad,
+ 				   struct v4l2_mbus_config *cfg)
+ {
+@@ -385,17 +328,6 @@ static const struct media_entity_operations cvs_csi_entity_ops = {
+ /*
+  * Async notifier
+  */
+-/**
+- * cvs_csi_notify_bound - Remote sensor bound callback
+- * @notifier: Async notifier
+- * @sd: Remote subdev
+- * @asc: Async match connection
+- *
+- * Locates the source pad of the remote sensor and creates a media link to
+- * the CVS bridge sink pad enabling it by default.
+- *
+- * Return: 0 on success or negative errno.
+- */
+ static int cvs_csi_notify_bound(struct v4l2_async_notifier *notifier,
+ 				struct v4l2_subdev *sd,
+ 				struct v4l2_async_connection *asc)
+@@ -419,12 +351,6 @@ static int cvs_csi_notify_bound(struct v4l2_async_notifier *notifier,
+ 	return v4l2_device_register_subdev_nodes(sd->v4l2_dev);
+ }
+ 
+-/**
+- * cvs_csi_notify_unbind - Remote sensor unbind callback
+- * @notifier: Notifier
+- * @sd: Remote subdev
+- * @asc: Connection
+- */
+ static void cvs_csi_notify_unbind(struct v4l2_async_notifier *notifier,
+ 				  struct v4l2_subdev *sd,
+ 				  struct v4l2_async_connection *asc)
+@@ -442,14 +368,6 @@ static const struct v4l2_async_notifier_operations cvs_csi_notify_ops = {
+ /*
+  * Controls
+  */
+-/**
+- * cvs_csi_init_controls - Initialize V4L2 controls
+- * @ctx: CVS context
+- *
+- * Currently sets up a read-only privacy control placeholder.
+- *
+- * Return: 0 on success or negative errno.
+- */
+ static int cvs_csi_init_controls(struct icvs *ctx)
+ {
+ 	struct v4l2_ctrl *privacy_ctrl;
+diff --git a/drivers/media/pci/intel/ipu-bridge.c b/drivers/media/pci/intel/ipu-bridge.c
+index 4d292ee2be59..1a6f41ee3667 100644
+--- a/drivers/media/pci/intel/ipu-bridge.c
++++ b/drivers/media/pci/intel/ipu-bridge.c
+@@ -8,6 +8,7 @@
+ #include <linux/dmi.h>
+ #include <linux/i2c.h>
+ #include <linux/mei_cl_bus.h>
++#include <linux/pci.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/property.h>
+@@ -15,6 +16,7 @@
+ #include <linux/workqueue.h>
+ 
+ #include <media/ipu-bridge.h>
++#include <media/ipu6-pci-table.h>
+ #include <media/v4l2-fwnode.h>
+ 
+ #define ADEV_DEV(adev) ACPI_PTR(&((adev)->dev))
+@@ -48,6 +50,14 @@
+  *
+  * Please keep the list sorted by ACPI HID.
+  */
++/* IPU6 variants whose CSI-2 receiver needs the ov5693 clock lane gated */
++static const u16 ipu6_ov5693_ncont_clk[] = {
++	PCI_DEVICE_ID_INTEL_IPU6,		/* Tiger Lake */
++	PCI_DEVICE_ID_INTEL_IPU6EP_ADLP,	/* Alder Lake-P */
++	PCI_DEVICE_ID_INTEL_IPU6EP_ADLN,	/* Alder Lake-N */
++	0
++};
++
+ static const struct ipu_sensor_config ipu_supported_sensors[] = {
+ 	/* Himax HM1092 */
+ 	IPU_SENSOR_CONFIG("HIMX1092", 2, 180000000, 180480000),
+@@ -60,11 +70,16 @@ static const struct ipu_sensor_config ipu_supported_sensors[] = {
+ 	/* GalaxyCore GC0310 */
+ 	IPU_SENSOR_CONFIG("INT0310", 1, 55692000),
+ 	/* Omnivision OV5693 */
++	IPU_SENSOR_CONFIG_MATCH_FL("INT33BE", ipu6_ov5693_ncont_clk,
++				   IPU_BR_FL_CSI2_CLK_NONCONTINUOUS,
++				   1, 419200000),
+ 	IPU_SENSOR_CONFIG("INT33BE", 1, 419200000),
+ 	/* Onsemi MT9M114 */
+ 	IPU_SENSOR_CONFIG("INT33F0", 1, 384000000),
+ 	/* Omnivision OV2740 */
+ 	IPU_SENSOR_CONFIG("INT3474", 1, 180000000),
++	/* Omnivision OV8858 */
++	IPU_SENSOR_CONFIG("INT3477", 1, 360000000),
+ 	/* Omnivision OV5670 */
+ 	IPU_SENSOR_CONFIG("INT3479", 1, 422400000),
+ 	/* Omnivision OV8865 */
+@@ -75,19 +90,22 @@ static const struct ipu_sensor_config ipu_supported_sensors[] = {
+ 	IPU_SENSOR_CONFIG("INT3537", 1, 437000000),
+ 	/* Lontium lt6911uxe */
+ 	IPU_SENSOR_CONFIG("INTC10C5", 0),
+-	/* Omnivision OV01A10 / OV01A1S */
++	/* Omnivision OV01A10 / OV01A1B / OV01A1S */
+ 	IPU_SENSOR_CONFIG("OVTI01A0", 1, 400000000),
++	IPU_SENSOR_CONFIG("OVTI01AB", 1, 400000000),
+ 	IPU_SENSOR_CONFIG("OVTI01AS", 1, 400000000),
+ 	/* Omnivision OV02C10 */
+ 	IPU_SENSOR_CONFIG("OVTI02C1", 1, 400000000),
+ 	/* Omnivision OV02E10 */
+ 	IPU_SENSOR_CONFIG("OVTI02E1", 1, 360000000),
+ 	/* Omnivision ov05c10 */
+-	IPU_SENSOR_CONFIG("OVTI05C1", 1, 480000000),
++	IPU_SENSOR_CONFIG("OVTI05C1", 2, 480000000, 900000000),
+ 	/* Omnivision OV08A10 */
+ 	IPU_SENSOR_CONFIG("OVTI08A1", 1, 500000000),
+ 	/* Omnivision OV08x40 */
+ 	IPU_SENSOR_CONFIG("OVTI08F4", 3, 400000000, 749000000, 800000000),
++	/* Omnivision OV13858 */
++	IPU_SENSOR_CONFIG("OVTID858", 2, 540000000, 270000000),
+ 	/* Omnivision OV13B10 */
+ 	IPU_SENSOR_CONFIG("OVTI13B1", 1, 560000000),
+ 	IPU_SENSOR_CONFIG("OVTIDB10", 1, 560000000),
+@@ -95,12 +113,19 @@ static const struct ipu_sensor_config ipu_supported_sensors[] = {
+ 	IPU_SENSOR_CONFIG("OVTI2680", 1, 331200000),
+ 	/* Omnivision OV5675 */
+ 	IPU_SENSOR_CONFIG("OVTI5675", 1, 450000000),
++	/* Omnivision OV5693 */
++	IPU_SENSOR_CONFIG_MATCH_FL("OVTI5693", ipu6_ov5693_ncont_clk,
++				   IPU_BR_FL_CSI2_CLK_NONCONTINUOUS,
++				   1, 419200000),
++	IPU_SENSOR_CONFIG("OVTI5693", 1, 419200000),
+ 	/* Omnivision OV8856 */
+ 	IPU_SENSOR_CONFIG("OVTI8856", 3, 180000000, 360000000, 720000000),
+ 	/* Sony IMX471 */
+ 	IPU_SENSOR_CONFIG("SONY471A", 1, 200000000),
+ 	/* Sony IMX471 (found on Lenovo X1 Carbon G14) */
+ 	IPU_SENSOR_CONFIG("TBE20A0", 1, 200000000),
++	/* STMicroelectronics VD55G1 (found on Lenovo X1 Carbon G14) */
++	IPU_SENSOR_CONFIG("TBE20A1", 1, 402000000),
+ 	/* Toshiba T4KA3 */
+ 	IPU_SENSOR_CONFIG("XMCC0003", 1, 321468000),
+ };
+@@ -124,6 +149,13 @@ static const struct dmi_system_id upside_down_sensor_dmi_ids[] = {
+ 		},
+ 		.driver_data = "OVTI02C1",
+ 	},
++	{
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "XPS 14 (Dell 14 Premium) DA14250"),
++		},
++		.driver_data = "OVTI02C1",
++	},
+ 	{
+ 		.matches = {
+ 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+@@ -145,6 +177,27 @@ static const struct dmi_system_id upside_down_sensor_dmi_ids[] = {
+ 		},
+ 		.driver_data = "OVTI02C1",
+ 	},
++	{
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Dell Pro 14 Premium PA14260"),
++		},
++		.driver_data = "OVTI08F4",
++	},
++	{
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Dell 14 Premium DA14250"),
++		},
++		.driver_data = "OVTI02C1",
++	},
++	{
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "XPS 16 DA16260"),
++		},
++		.driver_data = "OVTI08F4",
++	},
+ 	/*
+ 	 * The first four characters of DMI_BOARD_NAME identify the Lenovo
+ 	 * machine type/model. For example, a DMI_BOARD_NAME starting with
+@@ -184,6 +237,14 @@ static const struct dmi_system_id upside_down_sensor_dmi_ids[] = {
+ 		},
+ 		.driver_data = "SONY471A",
+ 	},
++	{
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME,
++					"Surface Pro for Business 11th Edition with Intel"),
++		},
++		.driver_data = "OVTID858",
++	},
+ 	{
+ 		/* Samsung Galaxy Book5 Pro 360 */
+ 		.matches = {
+@@ -192,6 +253,38 @@ static const struct dmi_system_id upside_down_sensor_dmi_ids[] = {
+ 		},
+ 		.driver_data = "OVTI02E1",
+ 	},
++	{
++		/* Samsung Galaxy Book3 Ultra */
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "SAMSUNG ELECTRONICS CO., LTD."),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "960XFH"),
++		},
++		.driver_data = "OVTI02C1",
++	},
++	{
++		/* Samsung Galaxy Book3 Pro */
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "SAMSUNG ELECTRONICS CO., LTD."),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "960XFG"),
++		},
++		.driver_data = "OVTI02C1",
++	},
++	{
++		/* Microsoft Surface Pro 9, front sensor */
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Pro 9"),
++		},
++		.driver_data = "OVTI5693",
++	},
++	{
++		/* Microsoft Surface Pro 9, rear sensor */
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Pro 9"),
++		},
++		.driver_data = "OVTID858",
++	},
+ 	{} /* Terminating entry */
+ };
+ 
+@@ -203,6 +296,7 @@ static const struct ipu_property_names prop_names = {
+ 	.data_lanes = "data-lanes",
+ 	.remote_endpoint = "remote-endpoint",
+ 	.link_frequencies = "link-frequencies",
++	.clock_noncontinuous = "clock-noncontinuous",
+ };
+ 
+ static const char * const ipu_vcm_types[] = {
+@@ -436,6 +530,7 @@ static enum v4l2_fwnode_orientation ipu_bridge_parse_orientation(struct acpi_dev
+ 
+ int ipu_bridge_parse_ssdb(struct acpi_device *adev, struct ipu_sensor *sensor)
+ {
++	acpi_handle handle = acpi_device_handle(ACPI_PTR(adev));
+ 	struct ipu_sensor_ssdb ssdb = {};
+ 	int ret;
+ 
+@@ -459,8 +554,15 @@ int ipu_bridge_parse_ssdb(struct acpi_device *adev, struct ipu_sensor *sensor)
+ 	sensor->rotation = ipu_bridge_parse_rotation(adev, &ssdb);
+ 	sensor->orientation = ipu_bridge_parse_orientation(adev);
+ 
+-	if (ssdb.vcmtype)
++	acpi_handle_debug(handle,
++			  "CSI-2 port %u, lanes %u, mclkspeed %u, rotation %u (SSDB %u), orientation %u\n",
++			  sensor->link, sensor->lanes, sensor->mclkspeed,
++			  sensor->rotation, ssdb.degree, sensor->orientation);
++
++	if (ssdb.vcmtype) {
+ 		sensor->vcm_type = ipu_vcm_types[ssdb.vcmtype - 1];
++		acpi_handle_debug(handle, "VCM %s\n", sensor->vcm_type);
++	}
+ 
+ 	return 0;
+ }
+@@ -473,6 +575,7 @@ static void ipu_bridge_create_fwnode_properties(
+ {
+ 	struct ipu_property_names *names = &sensor->prop_names;
+ 	struct software_node *nodes = sensor->swnodes;
++	unsigned int i = 0;
+ 
+ 	sensor->prop_names = prop_names;
+ 
+@@ -530,21 +633,25 @@ static void ipu_bridge_create_fwnode_properties(
+ 			PROPERTY_ENTRY_REF_ARRAY("lens-focus", sensor->vcm_ref);
+ 	}
+ 
+-	sensor->ep_properties[0] = PROPERTY_ENTRY_U32(
+-					sensor->prop_names.bus_type,
+-					V4L2_FWNODE_BUS_TYPE_CSI2_DPHY);
+-	sensor->ep_properties[1] = PROPERTY_ENTRY_U32_ARRAY_LEN(
+-					sensor->prop_names.data_lanes,
+-					bridge->data_lanes, sensor->lanes);
+-	sensor->ep_properties[2] = PROPERTY_ENTRY_REF_ARRAY(
+-					sensor->prop_names.remote_endpoint,
+-					sensor->local_ref);
++	sensor->ep_properties[IPU_BRIDGE_NEXT_PROPERTY(i, EP_BUS_TYPE)] =
++		PROPERTY_ENTRY_U32(names->bus_type,
++				   V4L2_FWNODE_BUS_TYPE_CSI2_DPHY);
++	sensor->ep_properties[IPU_BRIDGE_NEXT_PROPERTY(i, EP_DATA_LANES)] =
++		PROPERTY_ENTRY_U32_ARRAY_LEN(names->data_lanes,
++					     bridge->data_lanes, sensor->lanes);
++	sensor->ep_properties[IPU_BRIDGE_NEXT_PROPERTY(i, EP_REMOTE_EP)] =
++		PROPERTY_ENTRY_REF_ARRAY(names->remote_endpoint,
++					 sensor->local_ref);
+ 
+ 	if (cfg->nr_link_freqs > 0)
+-		sensor->ep_properties[3] = PROPERTY_ENTRY_U64_ARRAY_LEN(
+-			sensor->prop_names.link_frequencies,
+-			cfg->link_freqs,
+-			cfg->nr_link_freqs);
++		sensor->ep_properties[IPU_BRIDGE_NEXT_PROPERTY(i, EP_LINK_FREQUENCIES)] =
++			PROPERTY_ENTRY_U64_ARRAY_LEN(names->link_frequencies,
++						     cfg->link_freqs,
++						     cfg->nr_link_freqs);
++
++	if (cfg->flags & IPU_BR_FL_CSI2_CLK_NONCONTINUOUS)
++		sensor->ep_properties[IPU_BRIDGE_NEXT_PROPERTY(i, EP_CLOCK_NONCONTINUOUS)] =
++			PROPERTY_ENTRY_BOOL(names->clock_noncontinuous);
+ 
+ 	sensor->ipu_properties[0] = PROPERTY_ENTRY_U32_ARRAY_LEN(
+ 					sensor->prop_names.data_lanes,
+@@ -856,8 +963,8 @@ static int ipu_bridge_connect_sensor(const struct ipu_sensor_config *cfg,
+ 		if (ret)
+ 			goto err_free_swnodes;
+ 
+-		dev_info(bridge->dev, "Found supported sensor %s\n",
+-			 acpi_dev_name(adev));
++		dev_info(bridge->dev, "Found supported sensor %s (%pfw)\n",
++			 acpi_dev_name(adev), primary);
+ 
+ 		bridge->n_sensors++;
+ 	}
+@@ -874,8 +981,28 @@ static int ipu_bridge_connect_sensor(const struct ipu_sensor_config *cfg,
+ 	return ret;
+ }
+ 
++/*
++ * Whether a sensor config applies to the IPU this bridge sits on. A config
++ * listing PCI product IDs only applies to those IPUs.
++ */
++static bool ipu_bridge_config_matches(const struct ipu_sensor_config *cfg,
++				      struct ipu_bridge *bridge)
++{
++	const u16 *id;
++
++	if (!cfg->pci_ids)
++		return true;
++
++	for (id = cfg->pci_ids; *id; id++)
++		if (*id == bridge->pci_id)
++			return true;
++
++	return false;
++}
++
+ static int ipu_bridge_connect_sensors(struct ipu_bridge *bridge)
+ {
++	const char *done_hid = NULL;
+ 	unsigned int i;
+ 	int ret;
+ 
+@@ -883,9 +1010,22 @@ static int ipu_bridge_connect_sensors(struct ipu_bridge *bridge)
+ 		const struct ipu_sensor_config *cfg =
+ 			&ipu_supported_sensors[i];
+ 
++		/*
++		 * Entries for one HID are adjacent, IPU-specific ones first,
++		 * so the generic entry is skipped once a specific one has
++		 * matched and the sensor is not connected twice.
++		 */
++		if (done_hid && !strcmp(cfg->hid, done_hid))
++			continue;
++
++		if (!ipu_bridge_config_matches(cfg, bridge))
++			continue;
++
+ 		ret = ipu_bridge_connect_sensor(cfg, bridge);
+ 		if (ret)
+ 			goto err_unregister_sensors;
++
++		done_hid = cfg->hid;
+ 	}
+ 
+ 	return 0;
+@@ -942,6 +1082,18 @@ static int ipu_bridge_check_fwnode_graph(struct fwnode_handle *fwnode)
+ 	return ipu_bridge_check_fwnode_graph(fwnode->secondary);
+ }
+ 
++struct pci_dev *ipu_bridge_get_ipu6(void)
++{
++	struct pci_dev *ipu = NULL;
++
++	for (unsigned int i = 0; !ipu && ipu6_pci_tbl[i].vendor; i++)
++		ipu = pci_get_device(ipu6_pci_tbl[i].vendor,
++				     ipu6_pci_tbl[i].device, NULL);
++
++	return ipu;
++}
++EXPORT_SYMBOL_NS_GPL(ipu_bridge_get_ipu6, "INTEL_IPU_BRIDGE");
++
+ static DEFINE_MUTEX(ipu_bridge_mutex);
+ 
+ int ipu_bridge_init(struct device *dev,
+@@ -969,6 +1121,7 @@ int ipu_bridge_init(struct device *dev,
+ 		sizeof(bridge->ipu_node_name));
+ 	bridge->ipu_hid_node.name = bridge->ipu_node_name;
+ 	bridge->dev = dev;
++	bridge->pci_id = dev_is_pci(dev) ? to_pci_dev(dev)->device : 0;
+ 	bridge->parse_sensor_fwnode = parse_sensor_fwnode;
+ 
+ 	ret = software_node_register(&bridge->ipu_hid_node);
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index d4fcc336bc2a..7a6edccce002 100644
+index 50fcb6675357..bd550bff795f 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4534,6 +4534,30 @@ static void quirk_aspeed_pci_bridge_no_alias(struct pci_dev *pdev)
@@ -3057,6 +3403,80 @@ index d4fcc336bc2a..7a6edccce002 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
+diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c b/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c
+index da83358c97ea..17c53ae62fac 100644
+--- a/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c
++++ b/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c
+@@ -5677,7 +5677,6 @@ static int qmp_pcie_init(struct phy *phy)
+ 	struct qmp_pcie *qmp = phy_get_drvdata(phy);
+ 	const struct qmp_phy_cfg *cfg = qmp->cfg;
+ 	void __iomem *pcs = qmp->pcs;
+-	bool skip_reset;
+ 	int ret;
+ 
+ 	/*
+@@ -5693,9 +5692,6 @@ static int qmp_pcie_init(struct phy *phy)
+ 		qphy_checkbits(pcs, cfg->regs[QPHY_START_CTRL], SERDES_START | PCS_START) &&
+ 		qphy_checkbits(pcs, cfg->regs[QPHY_PCS_POWER_DOWN_CONTROL], cfg->pwrdn_ctrl);
+ 
+-	skip_reset = qmp->skip_init && !qphy_checkbits(pcs, cfg->regs[QPHY_PCS_STATUS],
+-							    cfg->phy_status);
+-
+ 	if (!qmp->skip_init && !cfg->tbls.serdes_num) {
+ 		dev_err(qmp->dev, "Init sequence not available\n");
+ 		return -ENODATA;
+@@ -5719,16 +5715,14 @@ static int qmp_pcie_init(struct phy *phy)
+ 		}
+ 	}
+ 
+-	if (!skip_reset) {
+-		ret = reset_control_assert(qmp->nocsr_reset);
+-		if (ret) {
+-			dev_err(qmp->dev, "no-csr reset assert failed\n");
+-			goto err_assert_reset;
+-		}
+-
+-		usleep_range(200, 300);
++	ret = reset_control_assert(qmp->nocsr_reset);
++	if (ret) {
++		dev_err(qmp->dev, "no-csr reset assert failed\n");
++		goto err_assert_reset;
+ 	}
+ 
++	usleep_range(200, 300);
++
+ 	if (!qmp->skip_init) {
+ 		ret = reset_control_bulk_deassert(cfg->num_resets, qmp->resets);
+ 		if (ret) {
+@@ -5777,11 +5771,8 @@ static int qmp_pcie_power_on(struct phy *phy)
+ 	void __iomem *pcs = qmp->pcs;
+ 	void __iomem *status;
+ 	unsigned int mask, val;
+-	bool skip_reset;
+ 	int ret;
+ 
+-	skip_reset = qmp->skip_init && !qphy_checkbits(pcs, cfg->regs[QPHY_PCS_STATUS],
+-							    cfg->phy_status);
+ 	/*
+ 	 * Write CSR register for PHY that doesn't support no_csr reset or has not
+ 	 * been initialized.
+@@ -5805,12 +5796,10 @@ static int qmp_pcie_power_on(struct phy *phy)
+ 	if (ret)
+ 		return ret;
+ 
+-	if (!skip_reset) {
+-		ret = reset_control_deassert(qmp->nocsr_reset);
+-		if (ret) {
+-			dev_err(qmp->dev, "no-csr reset deassert failed\n");
+-			goto err_disable_pipe_clk;
+-		}
++	ret = reset_control_deassert(qmp->nocsr_reset);
++	if (ret) {
++		dev_err(qmp->dev, "no-csr reset deassert failed\n");
++		goto err_disable_pipe_clk;
+ 	}
+ 
+ 	if (qmp->skip_init)
 diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
 index 729776086879..523789e82355 100644
 --- a/drivers/pwm/Kconfig
@@ -3522,10 +3942,10 @@ index 000000000000..d4b13fba8d23
 +MODULE_AUTHOR("Andrea della Porta <andrea.porta@suse.com>");
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/rtc/Kconfig b/drivers/rtc/Kconfig
-index 05b9233b9418..f512ecbd19b3 100644
+index dcf9bdaeacb0..ea8b34772718 100644
 --- a/drivers/rtc/Kconfig
 +++ b/drivers/rtc/Kconfig
-@@ -1999,6 +1999,18 @@ config RTC_DRV_R7301
+@@ -2020,6 +2020,18 @@ config RTC_DRV_R7301
  	   This driver can also be built as a module. If so, the module
  	   will be called rtc-r7301.
  
@@ -3858,6 +4278,19 @@ index b446905b48be..20e60bc403b4 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
+index d7600e5fa3d9..fe4c87dc61ba 100644
+--- a/fs/btrfs/extent_io.c
++++ b/fs/btrfs/extent_io.c
+@@ -504,7 +504,7 @@ static bool btrfs_verify_folio(struct fsverity_info *vi, struct folio *folio,
+ 
+ 	if (!vi || btrfs_folio_test_uptodate(fs_info, folio, start, len))
+ 		return true;
+-	return fsverity_verify_folio(vi, folio);
++	return fsverity_verify_blocks(vi, folio, len, offset_in_folio(folio, start));
+ }
+ 
+ static void end_folio_read(struct fsverity_info *vi, struct folio *folio,
 diff --git a/include/linux/crypto.h b/include/linux/crypto.h
 index b7c97f1c47c9..0a484f45b24a 100644
 --- a/include/linux/crypto.h
@@ -3995,6 +4428,119 @@ index 153e9043058f..2ee3a8990968 100644
 +#endif /* CONFIG_SECURITY_LOCKDOWN_LSM */
 +
  #endif /* ! __LINUX_SECURITY_H */
+diff --git a/include/media/ipu-bridge.h b/include/media/ipu-bridge.h
+index 16fac765456e..3ef94c2b7678 100644
+--- a/include/media/ipu-bridge.h
++++ b/include/media/ipu-bridge.h
+@@ -17,13 +17,28 @@
+ #define IPU_SENSOR_ROTATION_NORMAL		0
+ #define IPU_SENSOR_ROTATION_INVERTED		1
+ 
+-#define IPU_SENSOR_CONFIG(_HID, _NR, ...)	\
+-	(const struct ipu_sensor_config) {	\
+-		.hid = _HID,			\
+-		.nr_link_freqs = _NR,		\
+-		.link_freqs = { __VA_ARGS__ }	\
++/* Flags for struct ipu_sensor_config */
++/* The sensor's CSI-2 transmitter needs a non-continuous clock */
++#define IPU_BR_FL_CSI2_CLK_NONCONTINUOUS	BIT(0)
++
++/*
++ * Sensor config specific to one or more IPUs, identified by their PCI product
++ * IDs, with flags describing what the sensor needs there. Entries for one HID
++ * must be adjacent in ipu_supported_sensors[], with the IPU-specific ones
++ * before the generic one.
++ */
++#define IPU_SENSOR_CONFIG_MATCH_FL(_HID, _IDS, _FLAGS, _NR, ...)	\
++	(const struct ipu_sensor_config) {				\
++		.hid = _HID,						\
++		.pci_ids = _IDS,					\
++		.flags = _FLAGS,					\
++		.nr_link_freqs = _NR,					\
++		.link_freqs = { __VA_ARGS__ }				\
+ 	}
+ 
++#define IPU_SENSOR_CONFIG(_HID, _NR, ...)				\
++	IPU_SENSOR_CONFIG_MATCH_FL(_HID, NULL, 0, _NR, __VA_ARGS__)
++
+ #define NODE_SENSOR(_HID, _PROPS)		\
+ 	(const struct software_node) {		\
+ 		.name = _HID,			\
+@@ -64,6 +79,24 @@ enum ipu_sensor_swnodes {
+ 	SWNODE_COUNT
+ };
+ 
++enum ipu_bridge_ep_props {
++	IPU_BRIDGE_EP_BUS_TYPE,
++	IPU_BRIDGE_EP_DATA_LANES,
++	IPU_BRIDGE_EP_REMOTE_EP,
++	IPU_BRIDGE_EP_LINK_FREQUENCIES,
++	IPU_BRIDGE_EP_CLOCK_NONCONTINUOUS,
++	IPU_BRIDGE_EP_NUM_OF,
++	IPU_BRIDGE_EP_NUM_ENTRIES
++};
++
++/*
++ * Get the index of the next property in a property array, with a given maximum
++ * value.
++ */
++#define IPU_BRIDGE_NEXT_PROPERTY(index, max)		\
++	(WARN_ON((index) > IPU_BRIDGE_##max) ?		\
++	 IPU_BRIDGE_##max : (index)++)
++
+ /* Data representation as it is in ACPI SSDB buffer */
+ struct ipu_sensor_ssdb {
+ 	u8 version;
+@@ -102,6 +135,7 @@ struct ipu_property_names {
+ 	char data_lanes[11];
+ 	char remote_endpoint[16];
+ 	char link_frequencies[17];
++	char clock_noncontinuous[20];
+ };
+ 
+ struct ipu_node_names {
+@@ -115,6 +149,9 @@ struct ipu_node_names {
+ 
+ struct ipu_sensor_config {
+ 	const char *hid;
++	/* Zero-terminated list of IPU PCI product IDs, NULL for any IPU */
++	const u16 *pci_ids;
++	const u32 flags;
+ 	const u8 nr_link_freqs;
+ 	const u64 link_freqs[MAX_NUM_LINK_FREQS];
+ };
+@@ -141,7 +178,7 @@ struct ipu_sensor {
+ 	const char *vcm_type;
+ 
+ 	struct ipu_property_names prop_names;
+-	struct property_entry ep_properties[5];
++	struct property_entry ep_properties[IPU_BRIDGE_EP_NUM_ENTRIES];
+ 	struct property_entry dev_properties[5];
+ 	struct property_entry ipu_properties[3];
+ 	struct property_entry ivsc_properties[1];
+@@ -160,6 +197,8 @@ typedef int (*ipu_parse_sensor_fwnode_t)(struct acpi_device *adev,
+ 
+ struct ipu_bridge {
+ 	struct device *dev;
++	/* PCI product ID of the IPU, 0 if it is not a PCI device */
++	u16 pci_id;
+ 	ipu_parse_sensor_fwnode_t parse_sensor_fwnode;
+ 	char ipu_node_name[ACPI_ID_LEN];
+ 	struct software_node ipu_hid_node;
+@@ -169,11 +208,13 @@ struct ipu_bridge {
+ };
+ 
+ #if IS_ENABLED(CONFIG_IPU_BRIDGE)
++struct pci_dev *ipu_bridge_get_ipu6(void);
+ int ipu_bridge_init(struct device *dev,
+ 		    ipu_parse_sensor_fwnode_t parse_sensor_fwnode);
+ int ipu_bridge_parse_ssdb(struct acpi_device *adev, struct ipu_sensor *sensor);
+ int ipu_bridge_instantiate_vcm(struct device *sensor);
+ #else
++static inline struct pci_dev *ipu_bridge_get_ipu6(void) { return NULL; }
+ /* Use a define to avoid the @parse_sensor_fwnode argument getting evaluated */
+ #define ipu_bridge_init(dev, parse_sensor_fwnode)	(0)
+ static inline int ipu_bridge_instantiate_vcm(struct device *s) { return 0; }
 diff --git a/include/soc/bcm2835/raspberrypi-firmware.h b/include/soc/bcm2835/raspberrypi-firmware.h
 index 975bef529854..8c3d43977a03 100644
 --- a/include/soc/bcm2835/raspberrypi-firmware.h
@@ -4219,10 +4765,10 @@ index 000000000000..9424a83c6f48
 +test_bpffs                                       # needs CONFIG_BPF_PRELOAD
 +tunnel                                           # needs CONFIG_NET_FOU
 diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 93c707116fad..d9168137151b 100644
+index 81c5db5f57fb..56f0a4ac62dd 100644
 --- a/tools/testing/selftests/bpf/Makefile
 +++ b/tools/testing/selftests/bpf/Makefile
-@@ -529,8 +529,8 @@ LSKELS := fexit_sleep.c trace_printk.c trace_vprintk.c map_ptr_kern.c 	\
+@@ -531,8 +531,8 @@ LSKELS := fexit_sleep.c trace_printk.c trace_vprintk.c map_ptr_kern.c 	\
  LSKELS_SIGNED := fentry_test.c fexit_test.c atomics.c
  
  # Generate both light skeleton and libbpf skeleton for these

@@ -203,7 +203,7 @@ Summary: The Linux kernel
 %global released_kernel 1
 
 # define buildid .local
-%define specrpmversion 7.3.5
+%define specrpmversion 7.3.6
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -232,7 +232,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id e74a11c33d2b2600797c278279cc546ae1d0eeb4
+%global opensuse_id f857b30967a0b74d251554c8f23aab5ae6a14d81
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20260313
 
@@ -1288,7 +1288,10 @@ Patch2002: %{zen_url}/commit/53cd61cb0e1bf907a8bb296d8dcbf4ecefad28be.patch#/zen
 Patch2003: %{zen_url}/commit/74ea29b37e6d6d19515412906b1289c55e6cd71b.patch#/zen-v%{patchversion}-sauce-74ea29b.patch
 Patch2004: %{zen_url}/commit/20727b0f3df8d832053c5813ee342b04d6b9d087.patch#/zen-v%{patchversion}-sauce-20727b0.patch
 Patch2005: %{zen_url}/commit/d9f25aa599055aca5573b86eaadd153551927fc5.patch#/zen-v%{patchversion}-sauce-d9f25aa.patch
-Patch2006: %{zen_url}/commit/410c32b57716d019dbb1b6fa32c5aafd34cc358a.patch#/zen-v%{patchversion}-fixes-410c32b.patch
+Patch2006: %{zen_url}/commit/1098ae70355cf173cb9d8e2bf0fffbae324b7d29.patch#/zen-v%{patchversion}-fixes-1098ae7.patch
+Patch2007: %{zen_url}/commit/47313297c3343b938b153cff8b7bf58cb20e69b6.patch#/zen-v%{patchversion}-fixes-4731329.patch
+Patch2008: %{zen_url}/commit/09299358b32e1892775c1faf7695cb6d67beda3d.patch#/zen-v%{patchversion}-fixes-0929935.patch
+Patch2009: %{zen_url}/commit/619e915180fe2906a33b59031dafa2d8856728be.patch#/zen-v%{patchversion}-fixes-619e915.patch
 # zram-zcomp
 Patch2010: %{zen_url}/commit/200f8f1d7d74cfd4059de48cc4433693b61ffe20.patch#/zen-v%{patchversion}-zram-200f8f1.patch
 Patch2011: %{zen_url}/commit/70af1e08c9407a76b29a6ac1302e0a9665fb9e0b.patch#/zen-v%{patchversion}-zram-70af1e0.patch
@@ -1346,6 +1349,7 @@ Patch2071: %{zen_url}/commit/1c52d132ec8cf1221060daaddca5f816dbae3f2f.patch#/zen
 Patch2072: %{zen_url}/commit/a02aad84ac1ad67c80476ab6c1f8127f250923a8.patch#/zen-v%{patchversion}-fixes-a02aad8.patch
 Patch2073: %{zen_url}/commit/19365a2fb4734680ac04d09bc0a7be0b5469adf7.patch#/zen-v%{patchversion}-fixes-19365a2.patch
 Patch2074: 0001-mm-vmscan-avoid-false-positive-Wuninitialized-warnin.patch
+Patch2075: 0001-mm-mglru-Sync-the-MGLRU-FG-backport-with-v5-of-the-s.patch
 
 # Add native cpu gcc optimization support
 Patch6000: 0001-kbuild-support-x86_64-ISA-levels.patch
@@ -2358,6 +2362,10 @@ ApplyPatch %{PATCH2002}
 ApplyPatch %{PATCH2003}
 ApplyPatch %{PATCH2004}
 ApplyPatch %{PATCH2005}
+ApplyPatch %{PATCH2006}
+ApplyPatch %{PATCH2007}
+ApplyPatch %{PATCH2008}
+ApplyPatch %{PATCH2009}
 
 ApplyPatch %{PATCH2010}
 ApplyPatch %{PATCH2011}
@@ -2379,7 +2387,6 @@ ApplyPatch %{PATCH2025}
 ApplyPatch %{PATCH2030}
 ApplyPatch %{PATCH2031}
 ApplyPatch %{PATCH2032}
-ApplyPatch %{PATCH2006}
 
 ApplyPatch %{PATCH1502} -R
 ApplyPatch %{PATCH1501} -R
@@ -2419,6 +2426,7 @@ ApplyPatch %{PATCH2071}
 ApplyPatch %{PATCH2072}
 ApplyPatch %{PATCH2073}
 ApplyPatch %{PATCH2074}
+ApplyPatch %{PATCH2075}
 
 ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}
@@ -5191,6 +5199,9 @@ fi\
 #
 #
 %changelog
+* Mon Nov 23 2026 Phantom X <megaphantomx at hotmail dot com> - 7.3.6-500.chinfo
+- 7.3.6
+
 * Tue Nov 17 2026 Phantom X <megaphantomx at hotmail dot com> - 7.3.5-500.chinfo
 - 7.3.5
 

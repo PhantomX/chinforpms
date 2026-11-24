@@ -1,0 +1,558 @@
+From 76b74f9b168e4aff6f2997b7e7141ce1c0531a1e Mon Sep 17 00:00:00 2001
+From: Steven Barrett <steven@liquorix.net>
+Date: Sat, 21 Nov 2026 10:30:12 -0600
+Subject: [PATCH] mm/mglru: Sync the MGLRU-FG backport with v5 of the series
+
+This branch carries v4 of the MGLRU-FG series on v7.3.  The author
+posted v5 for mm-new.  v5 does not apply to v7.3, so this commit takes
+the changes that v5 made to v4 and that do not need mm-new.
+
+Kairui Song lists these changes in the cover letter of v5:
+
+  - Code and design are basically the same, mostly rebase and
+    adaption and comment updates.
+  - Pick up two patches from Ridong Chen to avoid conflicts.
+  - Share the ancestor walk between lruvec_live_lock_irq() and the
+    new folio_lruvec_live_get()
+
+The first patch from Ridong Chen is "mm/mglru: rename the generation
+offset in lru_gen_folio_seq()":
+
+  lru_gen_folio_seq() computes how many generations below max_seq a
+  folio should be added to, but stores it in a variable named "gen".
+  Elsewhere in MGLRU "gen" means an index into lrugen->folios[], i.e.
+  seq % MAX_NR_GENS, so reusing the name for a relative offset is
+  confusing.
+
+  Rename it to "age", which matches what the value means: the newest
+  generation is age 1, and a larger age is an older generation.
+
+  No functional change.
+
+The second patch is "mm/mglru: skip the flags cmpxchg when nothing
+changes":
+
+  folio_update_gen() and folio_set_lru_refs() always end with a
+  try_cmpxchg() on folio->flags, even when the new value equals the
+  old one. The locked instruction still takes the struct page
+  cacheline in exclusive state.
+
+  [...]
+
+  Break out of the loop when the flags would not change. The update
+  is complete at the point of that read: the flags already hold the
+  target value, and a concurrent change to them is ordered after it.
+  When the cmpxchg would have succeeded, the value written is the
+  same, so no new state becomes reachable.
+
+  [...]
+
+  [kasong: folio_update_gen() is replaced by folio_inc_lru_refs_walk()
+  later in the series, which keeps the same early exit.]
+
+Link: https://lore.kernel.org/r/20261119-mglru-fg-v5-0-9eee2fe97a2d@tencent.com
+Link: https://lore.kernel.org/r/20261119-mglru-fg-v5-1-9eee2fe97a2d@tencent.com
+Link: https://lore.kernel.org/r/20261119-mglru-fg-v5-5-9eee2fe97a2d@tencent.com
+Signed-off-by: Steven Barrett <steven@liquorix.net>
+---
+ include/linux/memcontrol.h | 108 +++++++++++++++++++------------------
+ include/linux/mm_inline.h  |  65 ++++++++++++----------
+ mm/madvise.c               |   4 +-
+ mm/vmscan.c                |  35 ++++++------
+ mm/workingset.c            |   4 +-
+ 5 files changed, 117 insertions(+), 99 deletions(-)
+
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index 961f433..10daec6 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -551,6 +551,11 @@ static inline bool mem_cgroup_disabled(void)
+ 	return !cgroup_subsys_enabled(memory_cgrp_subsys);
+ }
+ 
++static inline bool memcg_is_dying(struct mem_cgroup *memcg)
++{
++	return memcg ? css_is_dying(&memcg->css) : false;
++}
++
+ static inline void mem_cgroup_protection(struct mem_cgroup *root,
+ 					 struct mem_cgroup *memcg,
+ 					 unsigned long *min,
+@@ -1343,6 +1348,11 @@ static inline bool mem_cgroup_online(struct mem_cgroup *memcg)
+ 	return true;
+ }
+ 
++static inline bool memcg_is_dying(struct mem_cgroup *memcg)
++{
++	return false;
++}
++
+ static inline
+ unsigned long mem_cgroup_get_zone_lru_size(struct lruvec *lruvec,
+ 		enum lru_list lru, int zone_idx)
+@@ -1508,67 +1518,41 @@ static inline void lruvec_lock_irq(struct lruvec *lruvec)
+ 	spin_lock_irq(&lruvec->lru_lock);
+ }
+ 
+-/**
+- * folio_lruvec_live_get - get a live lruvec for a folio under RCU
+- * @folio: the folio
+- *
+- * Computes @folio's lruvec and walks up to the nearest live ancestor
+- * if the folio's memcg is dying.  Paired with folio_lruvec_live_put().
+- * The result may be stale: RCU keeps it alive but does not pin @folio
+- * to it.  That is fine as the counters are fixed up on reparenting.
+- *
+- * Return: the live lruvec, with rcu_read_lock held.
++/*
++ * Reparenting moves a dying memcg's LRU state to its parent at any time,
++ * so anything added to that LRU afterwards would be lost.  This helper
++ * walks up to the nearest live ancestor while the caller must hold the
++ * RCU read lock: reparenting of a memcg that starts dying waits for a
++ * grace period, so it cannot race with the caller until the lock is
++ * released.
+  */
+-static inline struct lruvec *folio_lruvec_live_get(struct folio *folio)
+-{
+-#ifdef CONFIG_MEMCG
+-	struct lruvec *lruvec;
+-	struct pglist_data *pgdat;
+-	struct mem_cgroup *memcg;
+-
+-	rcu_read_lock();
+-	lruvec = folio_lruvec(folio);
+-	pgdat = lruvec_pgdat(lruvec);
+-	memcg = lruvec_memcg(lruvec);
+-	while (unlikely(memcg && css_is_dying(&memcg->css))) {
+-		memcg = parent_mem_cgroup(memcg);
+-		lruvec = mem_cgroup_lruvec(memcg, pgdat);
+-	}
+-	return lruvec;
+-#else
+-	return folio_lruvec(folio);
+-#endif
+-}
+-
+-static inline void folio_lruvec_live_put(struct lruvec *lruvec)
+-{
+-#ifdef CONFIG_MEMCG
+-	rcu_read_unlock();
+-#endif
+-}
+-
+-static inline struct lruvec *lruvec_live_lock_irq(struct lruvec *lruvec)
++static inline struct lruvec *__lruvec_get_live(struct lruvec *lruvec)
+ {
+ #ifdef CONFIG_MEMCG
+ 	struct pglist_data *pgdat = lruvec_pgdat(lruvec);
+ 	struct mem_cgroup *memcg = lruvec_memcg(lruvec);
+ 
+-	rcu_read_lock();
+-
+ 	/*
+ 	 * The memcg can be NULL when the memory controller is disabled.
+ 	 * Otherwise, the caller keeps the memcg owning @lruvec alive.
+ 	 */
+-	while (unlikely(memcg && css_is_dying(&memcg->css))) {
++	while (unlikely(memcg_is_dying(memcg))) {
+ 		memcg = parent_mem_cgroup(memcg);
+ 		lruvec = mem_cgroup_lruvec(memcg, pgdat);
+ 	}
++#endif
++	return lruvec;
++}
+ 
++static inline struct lruvec *lruvec_live_lock_irq(struct lruvec *lruvec)
++{
++#ifdef CONFIG_MEMCG
++	rcu_read_lock();
++	lruvec = __lruvec_get_live(lruvec);
+ 	spin_lock_irq(&lruvec->lru_lock);
+ #else
+ 	lruvec_lock_irq(lruvec);
+ #endif
+-
+ 	return lruvec;
+ }
+ 
+@@ -1598,6 +1582,34 @@ static inline bool folio_matches_lruvec(struct folio *folio,
+ 	       lruvec_memcg(lruvec) == folio_memcg(folio);
+ }
+ 
++/**
++ * folio_lruvec_live_get - get a live lruvec for a folio under RCU
++ * @folio: the folio
++ *
++ * Same as folio_lruvec(), except that a folio whose memcg is dying is
++ * accounted to the nearest live ancestor, which is where reparenting
++ * would put it anyway.
++ *
++ * Return: the live lruvec, with rcu_read_lock() held.  Pair it with
++ * folio_lruvec_live_put().
++ */
++static inline struct lruvec *folio_lruvec_live_get(struct folio *folio)
++{
++#ifdef CONFIG_MEMCG
++	rcu_read_lock();
++	return __lruvec_get_live(folio_lruvec(folio));
++#else
++	return folio_lruvec(folio);
++#endif
++}
++
++static inline void folio_lruvec_live_put(struct lruvec *lruvec)
++{
++#ifdef CONFIG_MEMCG
++	rcu_read_unlock();
++#endif
++}
++
+ /* Don't lock again iff page's lruvec locked */
+ static inline struct lruvec *folio_lruvec_relock_irq(struct folio *folio,
+ 		struct lruvec *locked_lruvec)
+@@ -1862,11 +1874,6 @@ void mem_cgroup_node_filter_allowed(struct mem_cgroup *memcg, nodemask_t *mask);
+ 
+ void mem_cgroup_show_protected_memory(struct mem_cgroup *memcg);
+ 
+-static inline bool memcg_is_dying(struct mem_cgroup *memcg)
+-{
+-	return memcg ? css_is_dying(&memcg->css) : false;
+-}
+-
+ #else
+ static inline bool mem_cgroup_kmem_disabled(void)
+ {
+@@ -1937,11 +1944,6 @@ static inline void mem_cgroup_node_filter_allowed(struct mem_cgroup *memcg,
+ static inline void mem_cgroup_show_protected_memory(struct mem_cgroup *memcg)
+ {
+ }
+-
+-static inline bool memcg_is_dying(struct mem_cgroup *memcg)
+-{
+-	return false;
+-}
+ #endif /* CONFIG_MEMCG */
+ 
+ #if defined(CONFIG_MEMCG) && defined(CONFIG_LRU_GEN)
+diff --git a/include/linux/mm_inline.h b/include/linux/mm_inline.h
+index ae50f98..1d3867d 100644
+--- a/include/linux/mm_inline.h
++++ b/include/linux/mm_inline.h
+@@ -114,11 +114,11 @@ static __always_inline enum lru_list folio_lru_list(const struct folio *folio)
+  */
+ static inline int lru_get_gen_flags(unsigned long flags)
+ {
+-	int gen = ((flags & LRU_GEN_MASK) >> LRU_GEN_PGOFF) - 1;
++	int gen = (int)((flags & LRU_GEN_MASK) >> LRU_GEN_PGOFF);
+ 
+-	/* Exclude the legal -1 from the unsigned MAX_NR_GENS comparison */
+-	VM_WARN_ON_ONCE(gen != -1 && gen >= MAX_NR_GENS);
+-	return gen;
++	/* The gen is stored offset by one, so zero means off-list */
++	VM_WARN_ON_ONCE(gen > MAX_NR_GENS);
++	return gen - 1;
+ }
+ 
+ #ifdef CONFIG_LRU_GEN
+@@ -162,7 +162,8 @@ static inline int lru_hist_from_seq(unsigned long seq)
+ 
+ static inline int lru_tier_from_refs(unsigned int refs)
+ {
+-	BUILD_BUG_ON(fls(LRU_REFS_MAX - 1) > MAX_NR_TIERS - 1);
++	/* The refs range must map into the tier index space. */
++	BUILD_BUG_ON(BIT(LRU_TIER_MAX) < LRU_REFS_MAX);
+ 	VM_WARN_ON_ONCE(refs > LRU_REFS_MAX);
+ 	if (refs < LRU_REFS_WORKINGSET)
+ 		return 0;
+@@ -221,22 +222,31 @@ static inline void lru_set_refs_flags(unsigned long *flags, unsigned int refs)
+  *
+  * Reads the LRU referenced count set by lru_set_refs_flags().
+  */
+-static inline int lru_get_refs_flags(unsigned long flags)
++static inline unsigned int lru_get_refs_flags(unsigned long flags)
+ {
+-	int refs;
++	unsigned int refs;
+ 
+-	/* Return the total number of accesses. See the comment above MAX_NR_TIERS. */
+-	refs = (flags & BIT(PG_referenced)) ? BIT(0) : 0;
+-	refs += (flags & BIT(PG_workingset)) ? BIT(1) : 0;
+-	refs += ((flags & LRU_REFS_MASK) >> LRU_REFS_PGOFF) << 2;
++	/* Decode the per-folio reference state. */
++	refs  = !!(flags & BIT(PG_referenced));
++	refs |= !!(flags & BIT(PG_workingset)) << 1;
++	refs |= ((flags & LRU_REFS_MASK) >> LRU_REFS_PGOFF) << 2;
+ 	return refs;
+ }
+ 
+-static inline int folio_lru_refs(const struct folio *folio)
++static inline unsigned int folio_lru_refs(const struct folio *folio)
+ {
+ 	return lru_get_refs_flags(READ_ONCE(*const_folio_flags(folio, 0)));
+ }
+ 
++/*
++ * Referenced at least twice. Unlike lru_refs_is_active() this is not
++ * bounds-checked: folio_inc_lru_refs() evaluates refs unclamped.
++ */
++static inline bool lru_refs_is_workingset(unsigned int refs)
++{
++	return refs >= LRU_REFS_WORKINGSET;
++}
++
+ /**
+  * __folio_set_lru_refs - Set a folio's LRU refs.
+  * @folio: the folio
+@@ -253,6 +263,8 @@ static inline void __folio_set_lru_refs(struct folio *folio, unsigned int refs)
+ 		new_flags = old_flags;
+ 		VM_WARN_ON_ONCE(lru_get_gen_flags(old_flags) != -1);
+ 		lru_set_refs_flags(&new_flags, refs);
++		if (new_flags == old_flags)
++			break;
+ 	} while (!try_cmpxchg(folio_flags(folio, 0), &old_flags, new_flags));
+ }
+ 
+@@ -302,7 +314,7 @@ static inline void folio_migrate_lru_refs(struct folio *new, const struct folio
+  */
+ static __always_inline bool folio_test_workingset(const struct folio *folio)
+ {
+-	return folio_lru_refs(folio) >= LRU_REFS_WORKINGSET;
++	return lru_refs_is_workingset(folio_lru_refs(folio));
+ }
+ 
+ #ifdef CONFIG_LRU_GEN
+@@ -312,14 +324,11 @@ static inline bool lru_refs_is_active(unsigned int refs)
+ 	return refs >= LRU_REFS_ACTIVATED;
+ }
+ 
+-static inline bool lru_gen_at_tail(struct lruvec *lruvec, int type, int gen)
++static inline bool lru_gen_is_old(struct lruvec *lruvec, int type, int gen)
+ {
+ 	unsigned long min_seq = READ_ONCE(lruvec->lrugen.min_seq[type]);
+ 
+-	/*
+-	 * Consider a folio is at the tail of its LRU when it is within
+-	 * MIN_NR_GENS of the oldest generation of its own type
+-	 */
++	/* The MIN_NR_GENS oldest generations, which eviction scans next */
+ 	BUILD_BUG_ON(MIN_NR_GENS != 2);
+ 	return gen == lru_gen_from_seq(min_seq) ||
+ 	       gen == lru_gen_from_seq(min_seq + 1);
+@@ -346,8 +355,8 @@ static inline unsigned long lru_gen_folio_seq(const struct lruvec *lruvec,
+ 					      const struct folio *folio,
+ 					      bool reclaiming)
+ {
+-	int gen;
+-	int refs = folio_lru_refs(folio);
++	int age;
++	bool workingset = lru_refs_is_workingset(folio_lru_refs(folio));
+ 	int type = folio_is_file_lru(folio);
+ 	const struct lru_gen_folio *lrugen = &lruvec->lrugen;
+ 
+@@ -364,24 +373,25 @@ static inline unsigned long lru_gen_folio_seq(const struct lruvec *lruvec,
+ 	 * |<----------------------------------- MAX_NR_GENS ----------------------------------->|
+ 	 */
+ 	if (folio_test_active(folio))
+-		gen = MIN_NR_GENS - (refs >= LRU_REFS_WORKINGSET);
++		age = MIN_NR_GENS - workingset;
+ 	else if (reclaiming)
+-		gen = MAX_NR_GENS;
++		age = MAX_NR_GENS;
+ 	else if ((!folio_is_file_lru(folio) && !folio_test_swapcache(folio)) ||
+ 		 (folio_test_reclaim(folio) &&
+ 		  (folio_test_dirty(folio) || folio_test_writeback(folio))))
+-		gen = MIN_NR_GENS;
++		age = MIN_NR_GENS;
+ 	else
+-		gen = MAX_NR_GENS - (refs >= LRU_REFS_WORKINGSET);
++		age = MAX_NR_GENS - workingset;
+ 
+-	return max(READ_ONCE(lrugen->max_seq) - gen + 1, READ_ONCE(lrugen->min_seq[type]));
++	return max(READ_ONCE(lrugen->max_seq) - age + 1, READ_ONCE(lrugen->min_seq[type]));
+ }
+ 
+ static inline bool lru_gen_add_folio(struct lruvec *lruvec, struct folio *folio, bool reclaiming)
+ {
+ 	unsigned long seq;
+ 	unsigned long flags;
+-	int gen, refs;
++	unsigned int refs;
++	int gen;
+ 	int type = folio_is_file_lru(folio);
+ 	int zone = folio_zonenum(folio);
+ 	int delta = folio_nr_pages(folio);
+@@ -419,7 +429,8 @@ static inline bool lru_gen_add_folio(struct lruvec *lruvec, struct folio *folio,
+ static inline bool lru_gen_del_folio(struct lruvec *lruvec, struct folio *folio, bool reclaiming)
+ {
+ 	unsigned long flags;
+-	int gen, refs;
++	unsigned int refs;
++	int gen;
+ 	int type = folio_is_file_lru(folio);
+ 	int zone = folio_zonenum(folio);
+ 	int delta = folio_nr_pages(folio);
+diff --git a/mm/madvise.c b/mm/madvise.c
+index 00dc8fd..abce655 100644
+--- a/mm/madvise.c
++++ b/mm/madvise.c
+@@ -385,7 +385,7 @@ static void madvise_cold_prep_folio(struct folio *folio)
+ 
+ static void madvise_pageout_prep_folio(struct folio *folio)
+ {
+-	int refs = folio_lru_refs(folio);
++	unsigned int refs = folio_lru_refs(folio);
+ 
+ 	/*
+ 	 * For MGLRU, drop the count below LRU_REFS_WORKINGSET and cap
+@@ -395,7 +395,7 @@ static void madvise_pageout_prep_folio(struct folio *folio)
+ 	 * the workingset classification is preserved for PSI.
+ 	 */
+ 	if (lru_gen_enabled())
+-		__folio_set_lru_refs(folio, refs >= LRU_REFS_WORKINGSET ? LRU_REFS_WORKINGSET : 0);
++		__folio_set_lru_refs(folio, lru_refs_is_workingset(refs) ? LRU_REFS_WORKINGSET : 0);
+ }
+ 
+ static int madvise_cold_or_pageout_pte_range(pmd_t *pmd,
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index 30e3977..e17e5b7 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -899,7 +899,8 @@ enum folio_references {
+ void folio_inc_lru_refs(struct folio *folio, unsigned int flags)
+ {
+ 	int max_gen;
+-	int file, old_refs, refs, old_gen, gen;
++	unsigned int refs, old_refs;
++	int file, old_gen, gen;
+ 	unsigned long new_flags, old_flags, max_seq;
+ 	long nr_pages = folio_nr_pages(folio);
+ 	struct lru_gen_folio *lrugen;
+@@ -931,18 +932,19 @@ void folio_inc_lru_refs(struct folio *folio, unsigned int flags)
+ 		if (old_gen == max_gen)
+ 			goto out;
+ 		if (flags & (LRU_REF_MAPPED | LRU_REF_EXEC | LRU_REF_FORCE)) {
+-			if (refs > LRU_REFS_REFERENCED ||
++			if (lru_refs_is_workingset(refs) ||
+ 			    flags & (LRU_REF_EXEC | LRU_REF_FORCE))
+ 				gen = max_gen;
+-			/* First access only defers eviction of a tail gen */
+-			else if (lru_gen_at_tail(lruvec, file, old_gen))
++			/* First access only defers eviction of an old generation */
++			else if (lru_gen_is_old(lruvec, file, old_gen))
+ 				gen = (old_gen + 1) % MAX_NR_GENS;
+ 			refs = min(refs, LRU_REFS_PROTECTED);
+ 		} else if (refs > LRU_REFS_MAX) {
+ 			/* LRU refs counting overflow, bump the gen */
+ 			gen = (old_gen + 1) % MAX_NR_GENS;
+ 			refs = LRU_REFS_PROTECTED;
+-		} else if (lru_gen_at_tail(lruvec, file, old_gen) && refs >= LRU_REFS_WORKINGSET) {
++		} else if (lru_gen_is_old(lruvec, file, old_gen) &&
++			   lru_refs_is_workingset(refs)) {
+ 			/* Defer eviction of just accessed workingset */
+ 			gen = (old_gen + 1) % MAX_NR_GENS;
+ 			refs = min(refs, LRU_REFS_PROTECTED);
+@@ -990,7 +992,8 @@ void folio_inc_lru_refs(struct folio *folio, unsigned int flags)
+  */
+ bool folio_reset_lru_refs(struct folio *folio)
+ {
+-	int type, gen, refs;
++	unsigned int refs;
++	int type, gen;
+ 	unsigned long seq, new_flags, old_flags;
+ 	long nr_pages = folio_nr_pages(folio);
+ 	struct lruvec *lruvec;
+@@ -1039,7 +1042,8 @@ static int folio_inc_lru_refs_walk(struct folio *folio, struct lruvec *lruvec,
+ 				   int *old_refs, int *new_refs, int *type)
+ {
+ 	unsigned long new_flags, old_flags = READ_ONCE(*folio_flags(folio, 0));
+-	int refs, old_gen, max_gen;
++	unsigned int refs;
++	int old_gen, max_gen;
+ 	unsigned long max_seq;
+ 
+ 	do {
+@@ -1053,10 +1057,10 @@ static int folio_inc_lru_refs_walk(struct folio *folio, struct lruvec *lruvec,
+ 		if (old_gen >= 0 && old_gen != max_gen) {
+ 			*new_refs = min(refs, LRU_REFS_PROTECTED);
+ 			/* Promote second page table access or executable */
+-			if (refs > LRU_REFS_REFERENCED || is_exec_file_folio(folio, vma_flags))
++			if (lru_refs_is_workingset(refs) || is_exec_file_folio(folio, vma_flags))
+ 				*new_gen = max_gen;
+-			/* First access only defers eviction of a tail gen */
+-			else if (lru_gen_at_tail(lruvec, *type, old_gen))
++			/* First access only defers eviction of an old generation */
++			else if (lru_gen_is_old(lruvec, *type, old_gen))
+ 				*new_gen = (old_gen + 1) % MAX_NR_GENS;
+ 			else
+ 				*new_gen = old_gen;
+@@ -1088,7 +1092,7 @@ static int folio_inc_lru_refs_walk(struct folio *folio, struct lruvec *lruvec,
+ static bool folio_inc_lru_refs_isolated(struct folio *folio, const vma_flags_t *vma_flags)
+ {
+ 	unsigned long new_flags, old_flags = READ_ONCE(*folio_flags(folio, 0));
+-	int refs;
++	unsigned int refs;
+ 
+ 	do {
+ 		new_flags = old_flags;
+@@ -1097,7 +1101,7 @@ static bool folio_inc_lru_refs_isolated(struct folio *folio, const vma_flags_t *
+ 	} while (!try_cmpxchg(folio_flags(folio, 0), &old_flags, new_flags));
+ 
+ 	/* Promote second page table access or executable */
+-	return refs > LRU_REFS_REFERENCED || is_exec_file_folio(folio, vma_flags);
++	return lru_refs_is_workingset(refs) || is_exec_file_folio(folio, vma_flags);
+ }
+ #else
+ static bool folio_inc_lru_refs_isolated(struct folio *folio, const vma_flags_t *vma_flags)
+@@ -3514,7 +3518,8 @@ static int __folio_inc_gen(struct lruvec *lruvec, struct folio *folio,
+ 		int old_gen, bool *increased)
+ {
+ 	unsigned long new_flags, old_flags = READ_ONCE(*folio_flags(folio, 0));
+-	int file, refs, old_refs, new_gen;
++	unsigned int refs, old_refs;
++	int file, new_gen;
+ 
+ 	do {
+ 		new_gen = lru_get_gen_flags(old_flags);
+@@ -4202,7 +4207,7 @@ static bool inc_min_seq(struct lruvec *lruvec, int type, int swappiness)
+ 		while (pos != head) {
+ 			struct folio *folio = list_entry(pos, struct folio, lru);
+ 			long nr_pages = folio_nr_pages(folio);
+-			int refs = folio_lru_refs(folio);
++			unsigned int refs = folio_lru_refs(folio);
+ 			int tier = lru_tier_from_refs(refs);
+ 			bool gen_increased;
+ 
+@@ -4920,7 +4925,7 @@ static bool sort_folio(struct lruvec *lruvec, struct folio *folio, struct scan_c
+ 	int type = folio_is_file_lru(folio);
+ 	int zone = folio_zonenum(folio);
+ 	int delta = folio_nr_pages(folio);
+-	int refs = folio_lru_refs(folio);
++	unsigned int refs = folio_lru_refs(folio);
+ 	int tier = lru_tier_from_refs(refs);
+ 	struct lru_gen_folio *lrugen = &lruvec->lrugen;
+ 
+diff --git a/mm/workingset.c b/mm/workingset.c
+index a04d495..21af8e0 100644
+--- a/mm/workingset.c
++++ b/mm/workingset.c
+@@ -247,7 +247,7 @@ static void *lru_gen_eviction(struct folio *folio)
+ 	struct lru_gen_folio *lrugen;
+ 	int type = folio_is_file_lru(folio);
+ 	int delta = folio_nr_pages(folio);
+-	int refs = folio_lru_refs(folio);
++	unsigned int refs = folio_lru_refs(folio);
+ 	int tier = lru_tier_from_refs(refs);
+ 	struct mem_cgroup *memcg;
+ 	struct pglist_data *pgdat = folio_pgdat(folio);
+@@ -337,7 +337,7 @@ static void lru_gen_refault(struct folio *folio, void *shadow)
+ 		__folio_set_lru_refs(folio, min(refs, LRU_REFS_PROTECTED));
+ 	}
+ 
+-	if (refs >= LRU_REFS_WORKINGSET)
++	if (lru_refs_is_workingset(refs))
+ 		mod_lruvec_state(lruvec, WORKINGSET_RESTORE_BASE + type, delta);
+ unlock:
+ 	rcu_read_unlock();
+-- 
+2.56.1
+
